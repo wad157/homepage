@@ -1,0 +1,20 @@
+node_modules/
+server/node_modules/
+.claude/
+
+# Local secrets and API keys
+.env
+*.env
+server/.env
+server/*.env
+!server/.env.example
+
+server/tokens.json
+server/step_cache.json
+server/canvas_cache.json
+server/reminders.json
+server/remind_state.json
+
+*.log
+.DS_Store
+Thumbs.db

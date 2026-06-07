@@ -1,0 +1,6272 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的数据小馆 | Home</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fdf6ed;
+      --card: rgba(255, 250, 242, 0.7);
+      --card-strong: rgba(253, 246, 234, 0.85);
+      --text: #3a2820;
+      --muted: rgba(58, 40, 32, 0.64);
+      --line: rgba(130, 95, 60, 0.15);
+      --blue: #8b9eb8;
+      --green: #8ea87a;
+      --pink: #c1784e;
+      --gold: #d4a03c;
+      --bronze: #b0804e;
+      --shadow: 0 22px 70px rgba(130, 90, 45, 0.15);
+      --accent-main: #6f8f86;
+      --accent-main-soft: rgba(111, 143, 134, 0.15);
+      --accent-cool: #8b9eb8;
+      --accent-cool-soft: rgba(139, 158, 184, 0.14);
+      --accent-warm: #c4a15a;
+      --accent-warm-soft: rgba(196, 161, 90, 0.15);
+      --watermark: rgba(58, 40, 32, 0.045);
+    }
+
+    [data-theme="sunset"] {
+      color-scheme: dark;
+      --bg: #221a15;
+      --card: rgba(255, 255, 255, 0.12);
+      --card-strong: rgba(255, 255, 255, 0.17);
+      --text: #f2e5d5;
+      --muted: rgba(242, 229, 213, 0.7);
+      --line: rgba(255, 255, 255, 0.17);
+      --blue: #a4bbd6;
+      --green: #a8c492;
+      --pink: #e09a6e;
+      --gold: #ecc358;
+      --bronze: #d0a068;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+      --accent-main: #9eb8ad;
+      --accent-main-soft: rgba(158, 184, 173, 0.13);
+      --accent-cool: #a4bbd6;
+      --accent-cool-soft: rgba(164, 187, 214, 0.12);
+      --accent-warm: #d7b76a;
+      --accent-warm-soft: rgba(215, 183, 106, 0.13);
+      --watermark: rgba(242, 229, 213, 0.055);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .wallpaper {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background:
+        linear-gradient(120deg, rgba(255, 252, 247, 0.72), rgba(246, 238, 226, 0.42)),
+        linear-gradient(135deg, #fbf4ea 0%, #f2e6d4 48%, #fbf5ec 100%);
+    }
+
+    [data-theme="sunset"] .wallpaper {
+      background:
+        linear-gradient(120deg, rgba(24, 18, 14, 0.78), rgba(34, 25, 18, 0.38)),
+        linear-gradient(135deg, #211913 0%, #35261b 52%, #241b14 100%);
+    }
+
+    .wallpaper::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: none;
+    }
+
+    [data-theme="sunset"] .wallpaper::before {
+      opacity: 0;
+      background: none;
+    }
+
+    body.home-active .wallpaper::before {
+      opacity: 0;
+    }
+
+    .wallpaper::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(245, 235, 218, 0.12);
+      backdrop-filter: blur(1px);
+    }
+
+    [data-theme="sunset"] .wallpaper::after {
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    body.home-active .wallpaper::after {
+      background: rgba(245, 235, 218, 0.08);
+      backdrop-filter: blur(3px);
+    }
+
+    body.home-active[data-theme="sunset"] .wallpaper::after {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    [data-theme="sunset"] .food-area-tabs button,
+    [data-theme="sunset"] .food-review-card span,
+    [data-theme="sunset"] .food-mascot-label,
+    [data-theme="sunset"] .food-modal-meta span,
+    [data-theme="sunset"] .agent-status,
+    [data-theme="sunset"] .agent-quick button,
+    [data-theme="sunset"] .agent-form button,
+    [data-theme="sunset"] .canvas-pill,
+    [data-theme="sunset"] .food-score {
+      color: #2f261c;
+      text-shadow: none;
+    }
+
+    [data-theme="sunset"] .food-tier-label {
+      color: #241d16;
+    }
+
+    [data-theme="sunset"] .canvas-pill.today,
+    [data-theme="sunset"] .canvas-pill.soon {
+      color: #6f430b;
+      background: rgba(255, 246, 216, 0.82);
+      border-color: rgba(244, 181, 89, 0.46);
+    }
+
+    [data-theme="sunset"] .canvas-pill.overdue {
+      color: #7f2d17;
+      background: rgba(255, 232, 222, 0.84);
+      border-color: rgba(217, 95, 53, 0.46);
+    }
+
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+
+    .music-wave-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 520ms ease;
+    }
+
+    .music-wave-bg::before,
+    .music-wave-bg::after {
+      content: "";
+      position: absolute;
+      left: -8%;
+      right: -8%;
+      top: 50%;
+      height: 48vh;
+      transform: translateY(-50%);
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 14px,
+          rgba(47, 143, 127, 0.34) 14px 18px,
+          transparent 18px 30px
+        );
+      mask-image:
+        radial-gradient(ellipse at center, black 0 46%, transparent 72%),
+        linear-gradient(
+          90deg,
+          transparent 0 4%,
+          black 12% 88%,
+          transparent 96% 100%
+        );
+      mask-composite: intersect;
+      animation: musicWaveDrift 8s linear infinite, musicWavePulse 1.8s ease-in-out infinite;
+    }
+
+    .music-wave-bg::after {
+      top: 58%;
+      height: 34vh;
+      opacity: 0.76;
+      filter: blur(0.3px);
+      animation-duration: 11s, 2.4s;
+      animation-direction: reverse, normal;
+    }
+
+    body.music-playing .music-wave-bg {
+      opacity: 1;
+    }
+
+    [data-theme="sunset"] .music-wave-bg::before,
+    [data-theme="sunset"] .music-wave-bg::after {
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 14px,
+          rgba(236, 195, 88, 0.34) 14px 18px,
+          transparent 18px 30px
+        );
+    }
+
+    .music-note {
+      position: absolute;
+      left: var(--note-x);
+      top: var(--note-y);
+      color: rgba(47, 143, 127, 0.46);
+      font-size: var(--note-size);
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 10px 26px rgba(47, 61, 51, 0.14);
+      opacity: 0;
+      transform: translate3d(0, 0, 0) rotate(var(--note-rotate));
+      animation: musicNoteFloat var(--note-duration) ease-out forwards;
+      will-change: transform, opacity;
+    }
+
+    [data-theme="sunset"] .music-note {
+      color: rgba(236, 195, 88, 0.52);
+      text-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+    }
+
+    @keyframes musicWaveDrift {
+      from { background-position: 0 0; }
+      to { background-position: 220px 0; }
+    }
+
+    @keyframes musicWavePulse {
+      0%, 100% {
+        transform: translateY(-50%) scaleY(0.72);
+      }
+      50% {
+        transform: translateY(-50%) scaleY(1.08);
+      }
+    }
+
+    @keyframes musicNoteFloat {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0) scale(0.82) rotate(var(--note-rotate));
+      }
+      14% {
+        opacity: 0.92;
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--note-drift), -140px, 0) scale(1.24) rotate(calc(var(--note-rotate) + 26deg));
+      }
+    }
+
+    .topbar {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .nav,
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .pill,
+    .icon-btn {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--card);
+      color: var(--text);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 30px rgba(143, 105, 44, 0.12);
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      min-width: 42px;
+      padding-inline: 12px;
+    }
+
+    .pill:hover,
+    .icon-btn:hover {
+      background: var(--card-strong);
+    }
+
+    .pill.active {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .pager {
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .pager::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      display: grid;
+      align-items: center;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      padding: 104px clamp(40px, 5vw, 72px) 64px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .page > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .page::before,
+    .page::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #home::before {
+      opacity: 0;
+      background: none;
+    }
+
+    #home .glass {
+      border-color: rgba(255, 255, 255, 0.82);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.34)),
+        rgba(255, 255, 255, 0.44);
+      backdrop-filter: blur(56px) saturate(1.18);
+      -webkit-backdrop-filter: blur(56px) saturate(1.18);
+      box-shadow:
+        0 26px 88px rgba(85, 62, 38, 0.16),
+        0 1px 0 rgba(255, 255, 255, 0.92) inset,
+        0 -1px 0 rgba(255, 255, 255, 0.32) inset;
+    }
+
+    #home .glass:hover {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42)),
+        rgba(255, 255, 255, 0.52);
+      box-shadow:
+        0 32px 96px rgba(85, 62, 38, 0.18),
+        0 1px 0 rgba(255, 255, 255, 0.96) inset,
+        0 -1px 0 rgba(255, 255, 255, 0.36) inset;
+    }
+
+    #home .glass::before {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(255, 255, 255, 0.2) 34%, transparent 58%);
+    }
+
+    #home .glass::after {
+      background:
+        linear-gradient(225deg, transparent 58%, rgba(58, 40, 32, 0.045) 100%);
+    }
+
+    body[data-theme="sunset"] #home .glass {
+      border-color: rgba(255, 255, 255, 0.34);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.12)),
+        rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 30px 92px rgba(0, 0, 0, 0.46),
+        0 1px 0 rgba(255, 255, 255, 0.32) inset,
+        0 -1px 0 rgba(255, 255, 255, 0.1) inset;
+    }
+
+    #about::before {
+      opacity: 1;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(243,166,184,0.2), transparent 16rem),
+        radial-gradient(circle at 88% 28%, rgba(147,197,253,0.18), transparent 17rem),
+        radial-gradient(circle at 62% 88%, rgba(146,230,181,0.16), transparent 18rem);
+    }
+
+    #about::after {
+      content: "ABOUT / WU ANGDA";
+      inset: auto 5vw 8vh auto;
+      opacity: 1;
+      width: auto;
+      height: auto;
+      color: rgba(47,61,51,0.055);
+      font-size: clamp(42px, 8vw, 112px);
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 0.9;
+    }
+
+    #dashboard::before {
+      opacity: 1;
+      background:
+        linear-gradient(90deg, rgba(47,143,127,0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47,143,127,0.07) 1px, transparent 1px),
+        radial-gradient(circle at 14% 74%, rgba(255,211,109,0.18), transparent 18rem),
+        radial-gradient(circle at 88% 22%, rgba(111,167,200,0.18), transparent 18rem);
+      background-size: 52px 52px, 52px 52px, auto, auto;
+      mask-image: linear-gradient(135deg, transparent, black 16%, black 72%, transparent);
+    }
+
+    #dashboard::after {
+      content: "CANVAS API";
+      inset: 10vh auto auto 5vw;
+      opacity: 1;
+      width: auto;
+      height: auto;
+      color: rgba(47,143,127,0.07);
+      font-size: clamp(44px, 8vw, 120px);
+      font-weight: 900;
+      letter-spacing: 0;
+      transform: rotate(-4deg);
+    }
+
+    #data::before {
+      opacity: 1;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 28px, rgba(47,143,127,0.08) 28px 31px, transparent 31px 58px),
+        radial-gradient(circle at 18% 22%, rgba(255,211,109,0.22), transparent 16rem),
+        radial-gradient(circle at 84% 72%, rgba(243,166,184,0.16), transparent 18rem);
+    }
+
+    #data::after {
+      content: "MANUAL DATA";
+      inset: auto auto 8vh 6vw;
+      opacity: 1;
+      width: auto;
+      height: auto;
+      color: rgba(47,61,51,0.06);
+      font-size: clamp(42px, 7vw, 96px);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    #egg::before {
+      opacity: 1;
+      background:
+        linear-gradient(90deg, rgba(147,197,253,0.1) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(236,195,88,0.11) 1px, transparent 1px),
+        radial-gradient(circle at 18% 72%, rgba(146,230,181,0.2), transparent 18rem),
+        radial-gradient(circle at 82% 18%, rgba(243,166,184,0.18), transparent 18rem);
+      background-size: 42px 42px, 42px 42px, auto, auto;
+      animation: pageGridDrift 16s linear infinite;
+    }
+
+    #finish::before {
+      opacity: 1;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255,211,109,0.22), transparent 16rem),
+        radial-gradient(circle at 86% 78%, rgba(111,167,200,0.2), transparent 18rem),
+        repeating-linear-gradient(135deg, transparent 0 22px, rgba(47,143,127,0.07) 22px 24px, transparent 24px 46px);
+    }
+
+    #finish::after {
+      content: "PLAY / DDL";
+      inset: 9vh 5vw auto auto;
+      opacity: 1;
+      width: auto;
+      height: auto;
+      color: rgba(47,61,51,0.06);
+      font-size: clamp(42px, 8vw, 112px);
+      font-weight: 900;
+      letter-spacing: 0;
+      animation: watermarkFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes pageGridDrift {
+      to { background-position: 84px 42px, 84px 42px, 0 0, 0 0; }
+    }
+
+    @keyframes watermarkFloat {
+      50% { transform: translateY(10px) rotate(1deg); }
+    }
+
+    [data-theme="sunset"] #about::after,
+    [data-theme="sunset"] #dashboard::after,
+    [data-theme="sunset"] #data::after,
+    [data-theme="sunset"] #finish::after {
+      color: rgba(242,229,213,0.07);
+    }
+
+    #photo.page {
+      padding: 36px clamp(34px, 4vw, 58px) 22px;
+      align-items: start;
+    }
+
+    #food.page {
+      padding: 74px clamp(30px, 4vw, 56px) 24px;
+      align-items: start;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .home-card {
+      width: min(960px, 100%);
+      display: grid;
+      grid-template-columns: minmax(250px, 0.9fr) minmax(0, 1.1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .glass {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.72);
+      border-radius: 20px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.54), rgba(255,255,255,0.28)),
+        rgba(255,255,255,0.38);
+      backdrop-filter: blur(48px) saturate(1.22);
+      -webkit-backdrop-filter: blur(48px) saturate(1.22);
+      box-shadow:
+        0 20px 68px rgba(85, 62, 38, 0.13),
+        0 1px 0 rgba(255,255,255,0.78) inset,
+        0 -1px 0 rgba(255,255,255,0.22) inset;
+      transform: translate3d(var(--px, 0), var(--py, 0), 0);
+      transition: transform 200ms ease-out, box-shadow 400ms ease, border-color 400ms ease, background 400ms ease;
+    }
+
+    .glass:hover {
+      transform: translate3d(var(--px-h, 0), var(--py-h, 0), 0);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.62), rgba(255,255,255,0.34)),
+        rgba(255,255,255,0.46);
+      box-shadow:
+        0 26px 78px rgba(85, 62, 38, 0.16),
+        0 1px 0 rgba(255,255,255,0.86) inset,
+        0 -1px 0 rgba(255,255,255,0.28) inset;
+      border-color: rgba(255,255,255,0.84);
+    }
+
+    .glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.13) 34%, transparent 58%);
+      opacity: 1;
+    }
+
+    .glass::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(225deg, transparent 60%, rgba(58,40,32,0.045) 100%);
+      opacity: 1;
+    }
+
+    body[data-theme="sunset"] .glass {
+      border-color: rgba(255, 255, 255, 0.26);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)),
+        rgba(255,255,255,0.12);
+      box-shadow:
+        0 24px 78px rgba(0, 0, 0, 0.4),
+        0 1px 0 rgba(255,255,255,0.22) inset,
+        0 -1px 0 rgba(255,255,255,0.08) inset;
+    }
+
+    body[data-theme="sunset"] .glass:hover {
+      border-color: rgba(255, 255, 255, 0.34);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.23), rgba(255,255,255,0.11)),
+        rgba(255,255,255,0.15);
+      box-shadow:
+        0 30px 88px rgba(0, 0, 0, 0.46),
+        0 1px 0 rgba(255,255,255,0.3) inset,
+        0 -1px 0 rgba(255,255,255,0.1) inset;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--blue), var(--pink), var(--gold));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 200%;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .text-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: textReveal 720ms cubic-bezier(.2,.78,.16,1) forwards;
+    }
+
+    @keyframes textReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-panel {
+      position: relative;
+      padding: 26px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      min-height: 470px;
+    }
+
+    .avatar {
+      width: 138px;
+      height: 138px;
+      border: 3px solid rgba(255,255,255,0.72);
+      border-radius: 50%;
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(255,255,255,0.55);
+      box-shadow: 0 16px 50px rgba(143, 105, 44, 0.2), 0 0 0 9px rgba(255,255,255,0.18);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .avatar:hover {
+      transform: translateY(-4px) rotate(-2deg);
+      box-shadow: 0 24px 70px rgba(143, 105, 44, 0.24);
+    }
+
+    .avatar img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 36%;
+    }
+
+    .profile-panel h1 {
+      margin: 22px 0 8px;
+      font-size: clamp(30px, 5vw, 50px);
+      line-height: 1.05;
+    }
+
+    .type-line {
+      min-height: 28px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .links a {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      color: var(--text);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .links a:hover {
+      background: rgba(255,255,255,0.24);
+    }
+
+    .dash-panel {
+      position: relative;
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .clock {
+      display: grid;
+      gap: 4px;
+      padding: 20px;
+    }
+
+    .clock-time {
+      font-size: clamp(42px, 7vw, 72px);
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-date {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .hitokoto {
+      padding: 18px 20px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .status {
+      position: relative;
+      padding: 16px;
+      min-height: 116px;
+      overflow: hidden;
+    }
+
+    .status::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 4px;
+      background: var(--status-accent, var(--green));
+      opacity: 0.85;
+    }
+
+    .status::after {
+      content: "";
+      position: absolute;
+      right: -22px;
+      bottom: -28px;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: var(--status-glow, rgba(146,230,181,0.18));
+      pointer-events: none;
+    }
+
+    .status:nth-child(1) { --status-accent: #6fa7c8; --status-glow: rgba(111,167,200,0.2); }
+    .status:nth-child(2) { --status-accent: #f59e0b; --status-glow: rgba(245,158,11,0.18); }
+    .status:nth-child(3) { --status-accent: #92e6b5; --status-glow: rgba(146,230,181,0.2); }
+    .status:nth-child(4) { --status-accent: #f3a6b8; --status-glow: rgba(243,166,184,0.2); }
+    .status:nth-child(5) { --status-accent: #d8b4fe; --status-glow: rgba(216,180,254,0.18); }
+    .status:nth-child(6) { --status-accent: #ecc358; --status-glow: rgba(236,195,88,0.2); }
+
+    .status:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 143, 127, 0.24);
+    }
+
+    .status small {
+      color: var(--muted);
+    }
+
+    .status strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 28px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #coffeeTotal {
+      font-size: 20px;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #6fcf97;
+      margin-left: 6px;
+      vertical-align: middle;
+      animation: livePulse 2s ease-in-out infinite;
+    }
+
+    .live-dot.offline {
+      background: #c1784e;
+      animation: none;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px #6fcf97; }
+      50% { opacity: 0.4; box-shadow: 0 0 2px #6fcf97; }
+    }
+
+    .progress-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .progress-item {
+      display: grid;
+      gap: 7px;
+    }
+
+    .progress-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(88, 67, 42, 0.12);
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width 380ms ease;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .content {
+      position: relative;
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      max-height: calc(100vh - 126px);
+      overflow: auto;
+      scrollbar-width: thin;
+      padding: clamp(26px, 3.4vw, 42px);
+    }
+
+    .content.photo-content {
+      max-height: none;
+      overflow: hidden;
+    }
+
+    #food .content {
+      width: min(1180px, 100%);
+      max-height: none;
+      overflow: visible;
+      padding: clamp(18px, 2.4vw, 28px);
+    }
+
+    #food .section-head {
+      margin-bottom: 10px;
+    }
+
+    #food .section-head h2 {
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    #food .section-head p {
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+
+    #music .content {
+      width: min(1180px, 100%);
+      overflow: hidden;
+    }
+
+    .music-player {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.95fr) minmax(360px, 1.2fr);
+      gap: 20px;
+      align-items: stretch;
+      height: min(610px, calc(100vh - 230px));
+      min-height: 0;
+    }
+
+    .turntable-card,
+    .playlist-card {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: clamp(16px, 2vw, 22px);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0.12)),
+        rgba(255,255,255,0.22);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .turntable-card::before {
+      content: "MY PLAYLIST";
+      position: absolute;
+      left: 18px;
+      bottom: 8px;
+      color: rgba(47, 61, 51, 0.055);
+      font-size: clamp(46px, 8vw, 92px);
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 0.85;
+      pointer-events: none;
+    }
+
+    .turntable-card::after {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      z-index: 0;
+      background:
+        repeating-radial-gradient(circle at 27% 32%, rgba(47,61,51,0.06) 0 1px, transparent 1px 13px),
+        repeating-linear-gradient(90deg, transparent 0 15px, rgba(47,143,127,0.07) 15px 17px, transparent 17px 26px);
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.72), transparent 76%);
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    .record-wrap {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 250px;
+      isolation: isolate;
+      z-index: 1;
+    }
+
+    .record-wrap::before,
+    .record-wrap::after {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      height: 42px;
+      border-radius: 999px;
+      background:
+        linear-gradient(90deg, transparent, rgba(47,143,127,0.12), transparent),
+        repeating-linear-gradient(90deg, transparent 0 18px, rgba(47,61,51,0.1) 18px 20px, transparent 20px 34px);
+      opacity: 0.34;
+      pointer-events: none;
+    }
+
+    .record-wrap::before {
+      top: 22px;
+    }
+
+    .record-wrap::after {
+      bottom: 18px;
+      opacity: 0.2;
+    }
+
+    .record {
+      position: relative;
+      width: min(260px, 58vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, var(--record-label, #92e6b5) 0 17%, #151817 17.4% 19%, transparent 19.4%),
+        repeating-radial-gradient(circle, #171a19 0 8px, #232827 9px 11px, #111312 12px 15px);
+      box-shadow: 0 26px 58px rgba(29, 36, 31, 0.28), inset 0 0 0 7px rgba(255,255,255,0.04);
+    }
+
+    .record.playing {
+      animation: recordSpin 5.8s linear infinite;
+    }
+
+    .record::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+
+    .record::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.86);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 8px rgba(255,255,255,0.12);
+    }
+
+    @keyframes recordSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .tonearm {
+      position: absolute;
+      right: 7%;
+      top: 8%;
+      width: 160px;
+      height: 170px;
+      transform-origin: 132px 28px;
+      transform: rotate(-18deg);
+      transition: transform 420ms cubic-bezier(.2,.78,.16,1);
+      z-index: 2;
+    }
+
+    .tonearm.playing {
+      transform: rotate(8deg);
+    }
+
+    .tonearm::before {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 24px rgba(47,61,51,0.14), inset 0 0 0 7px rgba(47,61,51,0.1);
+    }
+
+    .tonearm::after {
+      content: "";
+      position: absolute;
+      right: 32px;
+      top: 30px;
+      width: 128px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.86), rgba(47,61,51,0.42));
+      transform: rotate(-36deg);
+      transform-origin: right center;
+      box-shadow: 0 10px 20px rgba(47,61,51,0.12);
+    }
+
+    .needle {
+      position: absolute;
+      left: 16px;
+      top: 92px;
+      width: 15px;
+      height: 30px;
+      border-radius: 5px 5px 9px 9px;
+      background: #1f2a24;
+      transform: rotate(-36deg);
+      box-shadow: 0 8px 16px rgba(47,61,51,0.18);
+    }
+
+    .music-now {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .music-now h3 {
+      margin: 0;
+      font-size: clamp(24px, 3.2vw, 34px);
+      line-height: 1.05;
+    }
+
+    .music-now p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .music-controls {
+      display: grid;
+      gap: 10px;
+      margin-top: 0;
+      position: relative;
+      z-index: 1;
+      justify-self: stretch;
+      width: auto;
+      max-width: none;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.24);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.32);
+    }
+
+    .music-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .music-buttons button {
+      min-width: 44px;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.36);
+      color: var(--text);
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .music-buttons button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 143, 127, 0.34);
+      background: rgba(255,255,255,0.58);
+    }
+
+    .play-toggle {
+      min-width: 64px;
+      background: linear-gradient(90deg, var(--green), var(--gold)) !important;
+      color: #1c1a18 !important;
+    }
+
+    .music-progress {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) 46px;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .music-progress input[type="range"],
+    .volume-control input[type="range"] {
+      width: 100%;
+      min-width: 0;
+      accent-color: var(--green);
+    }
+
+    .volume-control {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .playlist-card {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .playlist-head h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .playlist-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .playlist-list {
+      display: grid;
+      gap: 8px;
+      overflow: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+    }
+
+    .playlist-item {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 62px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.24);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .playlist-item:hover,
+    .playlist-item.active {
+      transform: translateY(-2px);
+      border-color: rgba(47, 143, 127, 0.34);
+      background: rgba(255,255,255,0.45);
+    }
+
+    .playlist-disc {
+      width: 50px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, var(--disc-color, var(--green)) 0 28%, #151817 29% 33%, #242a28 34% 100%);
+      box-shadow: inset 0 0 0 5px rgba(255,255,255,0.05);
+    }
+
+    .playlist-title {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .playlist-title b,
+    .playlist-title span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .playlist-title span,
+    .playlist-item small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    section {
+      padding: clamp(22px, 4vw, 34px);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 42px);
+    }
+
+    .section-head p {
+      margin: 8px 0 0;
+      max-width: 680px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .about-card,
+    .data-card,
+    .egg-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.28);
+      padding: 18px;
+    }
+
+    .about-card {
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .about-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--about-accent, var(--green));
+      opacity: 0.78;
+    }
+
+    .about-card::after {
+      content: "";
+      position: absolute;
+      right: -18px;
+      top: -18px;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: var(--about-glow, rgba(146,230,181,0.16));
+      pointer-events: none;
+    }
+
+    .about-card:nth-child(1) { --about-accent: #6fa7c8; --about-glow: rgba(111,167,200,0.18); }
+    .about-card:nth-child(2) { --about-accent: #92e6b5; --about-glow: rgba(146,230,181,0.18); }
+    .about-card:nth-child(3) { --about-accent: #ffd36d; --about-glow: rgba(255,211,109,0.2); }
+    .about-card:nth-child(4) { --about-accent: #f3a6b8; --about-glow: rgba(243,166,184,0.18); }
+
+    .about-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(47,143,127,0.28);
+      background: rgba(255,255,255,0.38);
+    }
+
+    .about-card b {
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .about-card span {
+      position: relative;
+      z-index: 1;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .dash-group {
+      grid-column: span 6;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.26);
+      padding: 16px;
+      min-height: 270px;
+    }
+
+    .dash-group.wide {
+      grid-column: span 12;
+    }
+
+    .group-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .group-title h3 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .group-title span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .service-card {
+      position: relative;
+      min-height: 128px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 15px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.05)),
+        var(--card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-3px);
+      background: var(--card-strong);
+    }
+
+    .service-card::after {
+      content: attr(data-icon);
+      position: absolute;
+      right: 12px;
+      bottom: -8px;
+      font-size: 58px;
+      opacity: 0.14;
+    }
+
+    .service-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .service-name {
+      font-weight: 800;
+      font-size: 17px;
+    }
+
+    .service-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .service-status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .service-card p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .service-tags {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .service-tags span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.2);
+      font-size: 12px;
+    }
+
+    .canvas-panel {
+      position: relative;
+      grid-column: span 12;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0.16)),
+        rgba(255, 255, 255, 0.26);
+      padding: 16px;
+      min-height: 300px;
+      overflow: hidden;
+    }
+
+    .canvas-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(47,143,127,0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47,143,127,0.07) 1px, transparent 1px);
+      background-size: 34px 34px;
+      opacity: 0.42;
+      mask-image: linear-gradient(135deg, transparent, black 24%, transparent 78%);
+      pointer-events: none;
+    }
+
+    .canvas-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .canvas-stat {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.26);
+      padding: 12px;
+      min-height: 78px;
+      overflow: hidden;
+    }
+
+    .canvas-stat::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: var(--canvas-accent, var(--green));
+    }
+
+    .canvas-stat:nth-child(1) { --canvas-accent: #6fa7c8; }
+    .canvas-stat:nth-child(2) { --canvas-accent: #ffd36d; }
+    .canvas-stat:nth-child(3) { --canvas-accent: #f3a6b8; }
+    .canvas-stat:nth-child(4) { --canvas-accent: #92e6b5; }
+
+    .canvas-stat small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .canvas-stat strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .canvas-list,
+    .canvas-notices {
+      display: grid;
+      gap: 9px;
+    }
+
+    .canvas-task,
+    .canvas-notice,
+    .canvas-empty {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.28);
+      padding: 12px;
+    }
+
+    .canvas-task {
+      display: grid;
+      gap: 8px;
+      color: inherit;
+      text-decoration: none;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .canvas-task:hover {
+      transform: translateY(-2px);
+      background: var(--card-strong);
+    }
+
+    .canvas-task-top,
+    .canvas-notice-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .canvas-task strong,
+    .canvas-notice strong {
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .canvas-task span,
+    .canvas-notice span,
+    .canvas-empty {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .canvas-pill {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.32);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .canvas-pill.overdue {
+      border-color: rgba(217, 95, 53, 0.45);
+      color: #b84424;
+      background: rgba(217, 95, 53, 0.12);
+    }
+
+    .canvas-pill.today,
+    .canvas-pill.soon {
+      border-color: rgba(244, 181, 89, 0.56);
+      color: #9b681e;
+      background: rgba(244, 181, 89, 0.14);
+    }
+
+    .canvas-subhead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gallery-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .photo-tile {
+      min-height: 116px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: end;
+      background: var(--tile-bg);
+      overflow: hidden;
+      color: white;
+      box-shadow: inset 0 -54px 54px rgba(0,0,0,0.34);
+    }
+
+    .photo-tile strong {
+      font-size: 14px;
+      line-height: 1.45;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+    }
+
+    .data-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+      gap: 14px;
+    }
+
+    .data-card {
+      overflow: hidden;
+    }
+
+    .data-card::before {
+      content: "";
+      position: absolute;
+      right: -44px;
+      top: -44px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,211,109,0.24), transparent 68%);
+      pointer-events: none;
+    }
+
+    .data-card:nth-child(2)::before {
+      background: radial-gradient(circle, rgba(111,167,200,0.22), transparent 68%);
+    }
+
+    .feature-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 14px;
+    }
+
+    .feature-layout.photo-layout {
+      display: block;
+    }
+
+    .feature-hero {
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      align-items: end;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.58)),
+        var(--feature-bg);
+      background-size: cover;
+      overflow: hidden;
+    }
+
+    .feature-hero h3 {
+      margin: 0 0 10px;
+      font-size: clamp(26px, 4vw, 46px);
+      line-height: 1.05;
+    }
+
+    .feature-hero p {
+      margin: 0;
+      max-width: 620px;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.8;
+    }
+
+    .feature-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .feature-card,
+    .food-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.24);
+      padding: 16px;
+    }
+
+    .feature-card strong,
+    .food-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .feature-card span,
+    .food-card span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .photo-viewer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      gap: 16px;
+      align-items: stretch;
+      height: min(680px, calc(100vh - 180px));
+      min-height: 0;
+    }
+
+    .photo-stage {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(26, 24, 22, 0.82);
+      overflow: hidden;
+      min-height: 0;
+      box-shadow: 0 18px 50px rgba(143, 105, 44, 0.12);
+    }
+
+    .photo-stage.empty {
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+
+    .photo-empty-copy {
+      max-width: 520px;
+    }
+
+    .photo-empty-copy h3 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.05;
+    }
+
+    .photo-empty-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 16px;
+    }
+
+    .photo-stage-figure {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.02);
+      transition: opacity 320ms ease, transform 420ms ease;
+      pointer-events: none;
+    }
+
+    .photo-stage-figure.show {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .photo-stage-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(26px) brightness(0.4) saturate(0.82);
+      transform: scale(1.08);
+    }
+
+    .photo-stage-main {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 26px;
+    }
+
+    .photo-stage-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 22px 22px 20px;
+      background: linear-gradient(180deg, rgba(28, 25, 22, 0), rgba(28, 25, 22, 0.62));
+      color: white;
+    }
+
+    .photo-stage-overlay strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .photo-stage-overlay span {
+      display: block;
+      color: rgba(255,255,255,0.82);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .photo-hit {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .photo-hit.prev {
+      left: 0;
+    }
+
+    .photo-hit.next {
+      right: 0;
+    }
+
+    .photo-hit::after {
+      content: attr(data-hint);
+      position: absolute;
+      top: 18px;
+      color: rgba(255,255,255,0.78);
+      font-size: 12px;
+      letter-spacing: 0;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    .photo-hit.prev::after {
+      left: 18px;
+    }
+
+    .photo-hit.next::after {
+      right: 18px;
+    }
+
+    .photo-hit:hover::after {
+      opacity: 1;
+    }
+
+    .photo-shelf {
+      display: grid;
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-content: stretch;
+      min-height: 0;
+    }
+
+    .photo-album {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.22);
+      cursor: pointer;
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+      box-shadow: 0 14px 34px rgba(143, 105, 44, 0.08);
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-height: 0;
+    }
+
+    .photo-album:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(143, 105, 44, 0.12);
+    }
+
+    .photo-album.active {
+      border-color: rgba(111, 167, 200, 0.55);
+      box-shadow: 0 18px 44px rgba(111, 167, 200, 0.18);
+    }
+
+    .photo-album-cover {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background: #e9dcc8;
+    }
+
+    .photo-album-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.04);
+      filter: saturate(1.02) brightness(0.98);
+      transition: transform 300ms ease, filter 300ms ease;
+    }
+
+    .photo-album:hover .photo-album-cover img,
+    .photo-album.active .photo-album-cover img {
+      transform: scale(1.08);
+      filter: saturate(1.04) brightness(1);
+    }
+
+    .photo-album-cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(0,0,0,0.34));
+    }
+
+    .photo-album-meta {
+      padding: 10px 12px 12px;
+    }
+
+    .photo-album-meta strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .photo-album-meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .food-map-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .food-map-stage {
+      position: relative;
+      min-height: 520px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(104, 139, 130, 0.18), rgba(244, 181, 89, 0.22)),
+        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.74), transparent 26rem),
+        rgba(255,255,255,0.2);
+      transition: box-shadow 480ms ease;
+    }
+
+    .food-map-stage.zoomed {
+      box-shadow: 0 8px 40px rgba(47, 143, 127, 0.14);
+    }
+
+    .food-map-toolbar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .food-map-kicker {
+      display: grid;
+      gap: 2px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.52);
+      backdrop-filter: blur(16px);
+    }
+
+    .food-map-kicker b {
+      font-size: 14px;
+    }
+
+    .food-map-kicker span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .food-back {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 13px;
+      background: rgba(255,255,255,0.56);
+      color: var(--text);
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      pointer-events: auto;
+    }
+
+    .food-map-canvas {
+      position: absolute;
+      inset: 0;
+      transform-origin: var(--origin-x, 50%) var(--origin-y, 50%);
+      transform: scale(var(--map-scale, 1));
+      transition: transform 720ms cubic-bezier(.2,.78,.16,1), filter 420ms ease;
+    }
+
+    .food-map-scene {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(18px) scale(0.985);
+      animation: foodSceneIn 620ms cubic-bezier(.2,.78,.16,1) forwards;
+    }
+
+    @keyframes foodSceneIn {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .food-region-grid {
+      position: absolute;
+      inset: 82px 20px 20px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .food-region-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.34);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      box-shadow: 0 18px 46px rgba(104, 74, 34, 0.1);
+      transition: transform 320ms ease, box-shadow 320ms ease, border-color 320ms ease;
+    }
+
+    .food-region-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(217, 95, 53, 0.42);
+      box-shadow: 0 24px 58px rgba(104, 74, 34, 0.16);
+    }
+
+    .food-region-card svg {
+      position: absolute;
+      inset: 4% 7% 26%;
+      width: 86%;
+      height: 70%;
+      filter: drop-shadow(0 18px 26px rgba(82, 74, 44, 0.14));
+    }
+
+    .food-region-card span {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .food-region-card b {
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .food-region-card small {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 12px;
+    }
+
+    .china-map,
+    .local-map {
+      position: absolute;
+      inset: 6% 6% 4%;
+      width: 88%;
+      height: 90%;
+      filter: drop-shadow(0 24px 38px rgba(106, 80, 39, 0.14));
+    }
+
+    .map-land {
+      fill: rgba(255, 248, 232, 0.82);
+      stroke: rgba(82, 104, 91, 0.28);
+      stroke-width: 2;
+    }
+
+    .map-line {
+      fill: none;
+      stroke: rgba(82, 104, 91, 0.16);
+      stroke-width: 1.2;
+    }
+
+    .map-road {
+      fill: none;
+      stroke: rgba(47, 38, 28, 0.18);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 10 12;
+    }
+
+    .map-water {
+      fill: none;
+      stroke: rgba(111, 167, 200, 0.42);
+      stroke-width: 14;
+      stroke-linecap: round;
+    }
+
+    .region-hotspot {
+      fill: rgba(217, 95, 53, 0.22);
+      stroke: rgba(217, 95, 53, 0.55);
+      stroke-width: 2.5;
+      stroke-dasharray: 6 4;
+      cursor: pointer;
+      transition: fill 280ms ease, stroke 280ms ease;
+    }
+
+    .region-hotspot:hover {
+      fill: rgba(217, 95, 53, 0.42);
+      stroke: rgba(217, 95, 53, 0.85);
+    }
+
+    .food-pin {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      z-index: 3;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+
+    .food-pin-dot {
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      background: #d95f35;
+      box-shadow: 0 0 0 8px rgba(217, 95, 53, 0.18), 0 12px 26px rgba(94, 55, 28, 0.24);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .food-pin-label {
+      position: absolute;
+      left: 50%;
+      top: 24px;
+      min-width: max-content;
+      transform: translateX(-50%);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.72);
+      box-shadow: 0 12px 26px rgba(104, 74, 34, 0.12);
+      font-size: 13px;
+      font-weight: 700;
+      backdrop-filter: blur(14px);
+    }
+
+    .food-pin:hover .food-pin-dot,
+    .food-pin.active .food-pin-dot {
+      transform: scale(1.22);
+      box-shadow: 0 0 0 12px rgba(217, 95, 53, 0.24), 0 16px 34px rgba(94, 55, 28, 0.3);
+    }
+
+    .food-pin.area {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 260ms ease 120ms, transform 260ms ease;
+    }
+
+    .food-pin.city .food-pin-label {
+      background: rgba(217, 95, 53, 0.12);
+      border-color: rgba(217, 95, 53, 0.35);
+      font-weight: 800;
+    }
+
+    .food-pin.city .food-pin-dot {
+      background: #d95f35;
+      box-shadow: 0 0 0 10px rgba(217, 95, 53, 0.22), 0 14px 30px rgba(94, 55, 28, 0.28);
+      width: 22px;
+      height: 22px;
+    }
+
+    .food-map-stage.zoomed .food-pin.city {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .food-map-stage.zoomed .food-pin.area {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .food-map-stage.zoomed .food-pin.area.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .food-pin.area .food-pin-dot {
+      width: 14px;
+      height: 14px;
+      background: #2f8f7f;
+      box-shadow: 0 0 0 7px rgba(47, 143, 127, 0.18), 0 10px 22px rgba(33, 82, 72, 0.22);
+    }
+
+    .food-map-stage.zoomed .food-pin-label {
+      transform: translateX(-50%) scale(1);
+      transform-origin: top center;
+    }
+
+    .food-map-stage.zoomed .food-pin .food-pin-dot {
+      transform: scale(1);
+    }
+
+    .food-map-stage.zoomed .food-pin:hover .food-pin-dot,
+    .food-map-stage.zoomed .food-pin.active .food-pin-dot {
+      transform: scale(1.18);
+    }
+
+    .food-detail {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.28);
+      display: grid;
+      grid-template-rows: 210px 1fr;
+      min-height: 520px;
+      animation: foodSceneIn 520ms cubic-bezier(.2,.78,.16,1) both;
+    }
+
+    .food-detail-image {
+      position: relative;
+      overflow: hidden;
+      background: #e6d8c0;
+    }
+
+    .food-detail-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.04);
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    .food-detail-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.4));
+    }
+
+    .food-score {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      z-index: 1;
+      min-width: 68px;
+      min-height: 42px;
+      border: 1px solid rgba(255,255,255,0.38);
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.76);
+      color: #2f261c;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      backdrop-filter: blur(14px);
+    }
+
+    .food-detail-body {
+      padding: 18px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+    }
+
+    .food-detail-body h3 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .food-detail-body p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .food-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .food-meta span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.32);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .food-review {
+      border-left: 3px solid rgba(217, 95, 53, 0.64);
+      padding-left: 12px;
+    }
+
+    .food-review-layout {
+      display: grid;
+      gap: 8px;
+      padding-right: 178px;
+    }
+
+    .food-mascot {
+      position: absolute;
+      right: 26px;
+      top: 94px;
+      z-index: 2;
+      width: 156px;
+      min-height: 178px;
+      pointer-events: none;
+      animation: foodMascotFloat 3.4s ease-in-out infinite;
+    }
+
+    @keyframes foodMascotFloat {
+      0%, 100% {
+        transform: translateY(0) rotate(-1deg);
+      }
+      50% {
+        transform: translateY(-10px) rotate(1deg);
+      }
+    }
+
+    .food-mascot-label {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      border: 1px solid rgba(217, 95, 53, 0.22);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(255,255,255,0.66);
+      color: rgba(36, 29, 22, 0.76);
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(104, 74, 34, 0.12);
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+    }
+
+    .hotpot-scene {
+      position: relative;
+      width: 156px;
+      height: 146px;
+      margin-top: 32px;
+    }
+
+    .hotpot {
+      position: absolute;
+      left: 50%;
+      top: 58px;
+      width: 106px;
+      height: 64px;
+      transform: translateX(-50%);
+      border-radius: 18px 18px 42px 42px;
+      background:
+        radial-gradient(ellipse at 50% 8%, rgba(255, 243, 206, 0.96) 0 33px, transparent 34px),
+        linear-gradient(180deg, #fff6d8, #f4b559 56%, #d95f35);
+      border: 3px solid rgba(130, 72, 68, 0.16);
+      box-shadow: 0 18px 30px rgba(104, 74, 34, 0.18);
+    }
+
+    .hotpot::before,
+    .hotpot::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      width: 22px;
+      height: 10px;
+      background: #d95f35;
+      border-radius: 999px;
+      border: 2px solid rgba(130, 72, 68, 0.16);
+    }
+
+    .hotpot::before {
+      left: -18px;
+    }
+
+    .hotpot::after {
+      right: -18px;
+    }
+
+    .hotpot-food {
+      position: absolute;
+      left: 50%;
+      top: 52px;
+      width: 82px;
+      height: 32px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 18% 48%, #92e6b5 0 6px, transparent 7px),
+        radial-gradient(circle at 38% 35%, #ff9f7a 0 7px, transparent 8px),
+        radial-gradient(circle at 58% 54%, #ffd36d 0 6px, transparent 7px),
+        radial-gradient(circle at 78% 38%, #92e6b5 0 5px, transparent 6px),
+        rgba(255, 242, 205, 0.82);
+      animation: foodBubble 1.1s ease-in-out infinite;
+    }
+
+    @keyframes foodBubble {
+      50% {
+        transform: translateX(-50%) translateY(-3px) scale(1.03);
+      }
+    }
+
+    .hotpot-steam {
+      position: absolute;
+      left: 50%;
+      top: 14px;
+      width: 12px;
+      height: 44px;
+      border-radius: 999px;
+      border-left: 4px solid rgba(255,255,255,0.66);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.32));
+      animation: steamRise 1.8s ease-in-out infinite;
+    }
+
+    .hotpot-steam.s1 {
+      margin-left: -34px;
+      animation-delay: 0.1s;
+    }
+
+    .hotpot-steam.s2 {
+      margin-left: -4px;
+      height: 52px;
+      animation-delay: 0.38s;
+    }
+
+    .hotpot-steam.s3 {
+      margin-left: 26px;
+      animation-delay: 0.66s;
+    }
+
+    @keyframes steamRise {
+      0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.78);
+      }
+      35% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-18px) scale(1.12);
+      }
+    }
+
+    .chopstick {
+      position: absolute;
+      top: 32px;
+      width: 76px;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #8b5e35, #d8a35f);
+      transform-origin: right center;
+      animation: chopstickTap 1.45s ease-in-out infinite;
+    }
+
+    .chopstick.c1 {
+      right: 10px;
+      transform: rotate(-28deg);
+    }
+
+    .chopstick.c2 {
+      right: 3px;
+      top: 43px;
+      transform: rotate(-20deg);
+      animation-delay: 0.12s;
+    }
+
+    @keyframes chopstickTap {
+      50% {
+        rotate: 7deg;
+      }
+    }
+
+    .food-spark {
+      position: absolute;
+      top: 38px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffd36d;
+      box-shadow: 18px 9px 0 #ff9f7a, 42px 2px 0 #92e6b5;
+      animation: ricePop 1.2s ease-in-out infinite;
+    }
+
+    .food-spark.left {
+      left: 42px;
+    }
+
+    .food-spark.right {
+      right: 46px;
+      animation-delay: 0.28s;
+    }
+
+    @keyframes ricePop {
+      50% {
+        transform: translateY(-5px);
+        opacity: 0.72;
+      }
+    }
+
+    .food-area-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .food-area-tabs button {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.34);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .food-area-tabs button.active {
+      border-color: rgba(47, 143, 127, 0.42);
+      background: rgba(146, 230, 181, 0.22);
+      font-weight: 800;
+    }
+
+    .food-area-tabs button:disabled {
+      cursor: not-allowed;
+      opacity: 0.52;
+    }
+
+    .food-tier-board {
+      display: grid;
+      gap: 7px;
+    }
+
+    .food-tier-row {
+      display: grid;
+      grid-template-columns: minmax(86px, 0.14fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 7px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08)),
+        rgba(255,255,255,0.22);
+    }
+
+    .food-tier-label {
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      min-height: 82px;
+      padding: 8px;
+      color: #1f251f;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      background: var(--tier-bg);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.42);
+    }
+
+    .food-tier-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 104px));
+      gap: 7px;
+      align-content: start;
+    }
+
+    .food-review-card {
+      position: relative;
+      min-height: 82px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 0;
+      background: rgba(255,255,255,0.24);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .food-review-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(217, 95, 53, 0.36);
+      box-shadow: 0 18px 36px rgba(104, 74, 34, 0.14);
+    }
+
+    .food-review-card img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .food-review-card span {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 6px;
+      border: 1px solid rgba(255,255,255,0.34);
+      border-radius: 999px;
+      padding: 4px 7px;
+      background: rgba(255,255,255,0.76);
+      color: #241d16;
+      font-size: 11px;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      backdrop-filter: blur(12px);
+    }
+
+    #food .canvas-empty {
+      min-height: auto;
+      padding: 10px;
+      align-self: center;
+      font-size: 12px;
+    }
+
+    .food-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(28, 24, 20, 0.46);
+      backdrop-filter: blur(12px);
+    }
+
+    .food-modal.show {
+      display: grid;
+    }
+
+    .food-modal-card {
+      width: min(860px, 100%);
+      max-height: min(760px, 92vh);
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.32);
+      border-radius: 16px;
+      background: rgba(250, 246, 236, 0.94);
+      box-shadow: 0 30px 90px rgba(29, 20, 14, 0.32);
+      animation: foodModalIn 220ms ease both;
+    }
+
+    @keyframes foodModalIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .food-modal-image {
+      min-height: 360px;
+      background: #eadfc9;
+    }
+
+    .food-modal-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .food-modal-body {
+      position: relative;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding: 24px;
+      color: #241d16;
+      overflow: auto;
+    }
+
+    .food-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(36, 29, 22, 0.14);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.62);
+      color: #241d16;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .food-modal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-right: 44px;
+    }
+
+    .food-modal-meta span {
+      border: 1px solid rgba(36, 29, 22, 0.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.58);
+      color: rgba(36, 29, 22, 0.72);
+      font-size: 12px;
+    }
+
+    .food-modal-body h3 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.18;
+    }
+
+    .food-modal-body p {
+      margin: 0;
+      color: rgba(36, 29, 22, 0.72);
+      line-height: 1.8;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tabs button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 13px;
+      background: rgba(255,255,255,0.22);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .range-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input[type="range"] {
+      width: 140px;
+      accent-color: var(--green);
+    }
+
+    .bars {
+      display: grid;
+      gap: 13px;
+      min-height: 318px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 70px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-label,
+    .bar-value {
+      color: var(--muted);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .story-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .story-item {
+      position: relative;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.24);
+      line-height: 1.75;
+      overflow: hidden;
+    }
+
+    .story-item::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: var(--story-accent, var(--gold));
+    }
+
+    .story-item:nth-child(1) { --story-accent: #ffd36d; }
+    .story-item:nth-child(2) { --story-accent: #92e6b5; }
+    .story-item:nth-child(3) { --story-accent: #f3a6b8; }
+    }
+
+    .story-item b {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .story-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .egg-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+    }
+
+    .egg-card h3 {
+      margin: 0 0 10px;
+      font-size: 25px;
+    }
+
+    .egg-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .spark-button {
+      min-height: 44px;
+      margin-top: 22px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 18px;
+      background: linear-gradient(90deg, var(--pink), var(--gold));
+      color: #1c1a18;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .agent-card {
+      isolation: isolate;
+      display: grid;
+      gap: 14px;
+      min-height: 560px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.34), rgba(255,255,255,0.12)),
+        radial-gradient(circle at 18% 18%, rgba(146, 230, 181, 0.22), transparent 18rem),
+        radial-gradient(circle at 88% 10%, rgba(255, 211, 109, 0.18), transparent 15rem),
+        rgba(255,255,255,0.22);
+      box-shadow: 0 24px 70px rgba(47, 61, 51, 0.16);
+      animation: agentCardIn 620ms cubic-bezier(.2,.78,.16,1) both;
+    }
+
+    .agent-card::before {
+      content: "WU ANGDA / AGENT";
+      position: absolute;
+      right: -10px;
+      top: 12px;
+      z-index: -1;
+      color: rgba(47, 61, 51, 0.055);
+      font-size: clamp(46px, 8vw, 112px);
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 0.9;
+      pointer-events: none;
+    }
+
+    .agent-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,0.16) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(135deg, transparent, black 22%, transparent 72%);
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    @keyframes agentCardIn {
+      from {
+        opacity: 0;
+        transform: translateY(22px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .agent-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .agent-status {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.32);
+      color: var(--muted);
+      font-size: 12px;
+      box-shadow: 0 0 0 0 rgba(47, 143, 127, 0.18);
+      animation: agentStatusPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes agentStatusPulse {
+      50% {
+        box-shadow: 0 0 0 8px rgba(47, 143, 127, 0.08);
+      }
+    }
+
+    .agent-quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .agent-quick button,
+    .agent-form button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      background:
+        linear-gradient(135deg, var(--agent-chip, rgba(255,255,255,0.34)), rgba(255,255,255,0.26));
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .agent-quick button:nth-child(1) { --agent-chip: rgba(255,211,109,0.26); }
+    .agent-quick button:nth-child(2) { --agent-chip: rgba(111,167,200,0.24); }
+    .agent-quick button:nth-child(3) { --agent-chip: rgba(245,158,11,0.2); }
+    .agent-quick button:nth-child(4) { --agent-chip: rgba(216,180,254,0.2); }
+    .agent-quick button:nth-child(5) { --agent-chip: rgba(243,166,184,0.22); }
+    .agent-quick button:nth-child(6) { --agent-chip: rgba(146,230,181,0.24); }
+
+    .agent-quick button:hover,
+    .agent-form button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 143, 127, 0.34);
+      background: rgba(255,255,255,0.52);
+    }
+
+    .agent-chat {
+      display: grid;
+      gap: 10px;
+      max-height: 360px;
+      min-height: 240px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.13)),
+        rgba(255,255,255,0.18);
+      align-content: start;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+
+    .agent-message {
+      max-width: 78%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px 13px;
+      line-height: 1.7;
+      color: var(--muted);
+      background: rgba(255,255,255,0.32);
+      font-size: 14px;
+      animation: agentMessageIn 220ms ease both;
+    }
+
+    @keyframes agentMessageIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .agent-message.user {
+      justify-self: end;
+      color: #1f2a24;
+      background: rgba(146, 230, 181, 0.24);
+      border-color: rgba(47, 143, 127, 0.28);
+    }
+
+    .agent-message.bot {
+      justify-self: start;
+    }
+
+    .agent-message.loading {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .agent-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .agent-form input {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 14px;
+      background: rgba(255,255,255,0.36);
+      color: var(--text);
+      outline: none;
+      transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .agent-form input:focus {
+      border-color: rgba(47, 143, 127, 0.42);
+      background: rgba(255,255,255,0.54);
+      box-shadow: 0 0 0 4px rgba(47, 143, 127, 0.1);
+    }
+
+    .game-card {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-columns: minmax(260px, 0.95fr) minmax(300px, 1.35fr);
+      gap: 18px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: clamp(16px, 2.2vw, 24px);
+      background:
+        radial-gradient(circle at 8% 16%, rgba(146, 230, 181, 0.24), transparent 18rem),
+        radial-gradient(circle at 88% 12%, rgba(255, 211, 109, 0.2), transparent 16rem),
+        rgba(255,255,255,0.24);
+      overflow: hidden;
+    }
+
+    .game-card::before {
+      content: "PRESS START";
+      position: absolute;
+      right: -8px;
+      bottom: 12px;
+      z-index: -1;
+      color: rgba(47,61,51,0.055);
+      font-size: clamp(42px, 8vw, 108px);
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 0.86;
+      pointer-events: none;
+    }
+
+    .game-copy {
+      display: grid;
+      align-content: center;
+      gap: 16px;
+    }
+
+    .game-copy h3 {
+      margin: 0;
+      font-size: clamp(28px, 4.4vw, 52px);
+      line-height: 1;
+    }
+
+    .game-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .game-hud {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .game-hud span {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255,255,255,0.28);
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .game-hud span::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: var(--game-accent, var(--green));
+    }
+
+    .game-hud span:nth-child(1) { --game-accent: #ffd36d; }
+    .game-hud span:nth-child(2) { --game-accent: #6fa7c8; }
+    .game-hud span:nth-child(3) { --game-accent: #f3a6b8; }
+
+    .game-hud b {
+      display: block;
+      margin-top: 3px;
+      color: var(--text);
+      font-size: 20px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .game-actions,
+    .game-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .game-actions button,
+    .game-controls button {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 16px;
+      background: rgba(255,255,255,0.34);
+      color: var(--text);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .game-actions button:hover,
+    .game-controls button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 143, 127, 0.34);
+      background: rgba(255,255,255,0.54);
+    }
+
+    .game-board {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .game-stage {
+      position: relative;
+      height: min(52vh, 440px);
+      min-height: 310px;
+      border: 1px solid rgba(255,255,255,0.52);
+      border-radius: 14px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1)),
+        radial-gradient(circle at 20% 18%, rgba(146,230,181,0.22), transparent 18rem),
+        repeating-linear-gradient(90deg, rgba(47,143,127,0.08) 0 1px, transparent 1px 54px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.42);
+      touch-action: none;
+    }
+
+    .game-stage::before {
+      content: "BREAK THIS PAGE";
+      position: absolute;
+      left: 18px;
+      top: 12px;
+      color: rgba(47, 61, 51, 0.08);
+      font-size: clamp(34px, 7vw, 88px);
+      font-weight: 900;
+      letter-spacing: 0;
+      pointer-events: none;
+    }
+
+    .game-wall,
+    .game-paddle,
+    .game-ball,
+    .game-brick {
+      position: absolute;
+      z-index: 1;
+    }
+
+    .game-brick {
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 6px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,255,255,0.28)),
+        var(--brick-bg, rgba(146,230,181,0.32));
+      color: #213028;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.25;
+      box-shadow: 0 12px 24px rgba(47, 61, 51, 0.12);
+      transition: transform 120ms ease, opacity 120ms ease;
+      user-select: none;
+      will-change: transform, opacity;
+    }
+
+    .game-brick.photo {
+      background-image:
+        linear-gradient(135deg, rgba(24,31,28,0.12), rgba(255,255,255,0.25)),
+        var(--brick-image);
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.55);
+    }
+
+    .game-brick.hit {
+      transform: scale(0.88) rotate(-2deg);
+      opacity: 0;
+    }
+
+    .game-paddle {
+      left: 0;
+      bottom: 18px;
+      width: 96px;
+      height: 14px;
+      border: 1px solid rgba(47,143,127,0.42);
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(47,143,127,0.95), rgba(255,211,109,0.95));
+      box-shadow: 0 14px 28px rgba(47, 61, 51, 0.18);
+      transform: translate3d(0, 0, 0) translateX(-50%);
+      will-change: transform;
+    }
+
+    .game-ball {
+      left: 0;
+      top: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff, #ffd36d 48%, #d95f35 100%);
+      box-shadow: 0 0 18px rgba(255,211,109,0.54);
+      transform: translate3d(0, 0, 0) translate(-50%, -50%);
+      will-change: transform;
+    }
+
+    .game-easter {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 4;
+      width: min(86%, 390px);
+      border: 1px solid rgba(255,255,255,0.62);
+      border-radius: 16px;
+      padding: 18px;
+      background: rgba(255,255,255,0.78);
+      color: #213028;
+      text-align: center;
+      box-shadow: 0 24px 70px rgba(47, 61, 51, 0.18);
+      backdrop-filter: blur(18px);
+      transform: translate(-50%, -50%) scale(0.96);
+      animation: gameEasterIn 420ms cubic-bezier(.2,.78,.16,1) forwards;
+    }
+
+    .game-easter strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .game-easter span {
+      display: block;
+      color: rgba(33,48,40,0.74);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    @keyframes gameEasterIn {
+      to {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .game-note {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .idea-box {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .idea {
+      min-height: 86px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.24);
+      line-height: 1.7;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      z-index: 20;
+      width: min(440px, calc(100% - 28px));
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card-strong);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translate(-50%, 18px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      line-height: 1.7;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .confetti {
+      position: fixed;
+      top: -14px;
+      z-index: 30;
+      width: 8px;
+      height: 14px;
+      border-radius: 3px;
+      pointer-events: none;
+      animation: fall 980ms ease-in forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translate3d(var(--drift), 108vh, 0) rotate(540deg);
+        opacity: 0;
+      }
+    }
+
+    footer {
+      padding: 18px 0 34px;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    #photo .photo-viewer {
+      display: block;
+      min-height: auto;
+    }
+
+    #photo .photo-stage {
+      height: min(560px, calc(100vh - 300px));
+      min-height: 420px;
+      max-height: 560px;
+    }
+
+    #photo .photo-empty-copy h3,
+    #photo .photo-empty-copy p {
+      color: #fff;
+    }
+
+    #photo .photo-shelf {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: none;
+      gap: 10px;
+      min-height: auto;
+      margin-top: 14px;
+    }
+
+    #photo .photo-album {
+      grid-template-rows: auto 1fr;
+      border-radius: 10px;
+    }
+
+    #photo .photo-album-cover {
+      height: 74px;
+      max-height: 74px;
+      border-radius: 8px;
+    }
+
+    /* Calm color pass: keep accents cohesive instead of rainbow-like. */
+    #home::before {
+      opacity: 0;
+      background: none;
+    }
+
+    #about::before {
+      opacity: 1;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(255, 255, 255, 0.18), transparent 17rem),
+        radial-gradient(circle at 88% 28%, rgba(74, 57, 41, 0.055), transparent 18rem),
+        radial-gradient(circle at 64% 88%, rgba(255, 255, 255, 0.12), transparent 20rem);
+    }
+
+    #dashboard::before {
+      opacity: 1;
+      background:
+        linear-gradient(90deg, rgba(111, 143, 134, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(111, 143, 134, 0.055) 1px, transparent 1px),
+        radial-gradient(circle at 14% 74%, rgba(255, 255, 255, 0.14), transparent 19rem),
+        radial-gradient(circle at 88% 22%, rgba(74, 57, 41, 0.055), transparent 19rem);
+      background-size: 56px 56px, 56px 56px, auto, auto;
+      mask-image: linear-gradient(135deg, transparent, black 18%, black 74%, transparent);
+    }
+
+    #data::before {
+      opacity: 1;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 34px, rgba(111, 143, 134, 0.055) 34px 36px, transparent 36px 70px),
+        radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.13), transparent 18rem),
+        radial-gradient(circle at 84% 72%, rgba(74, 57, 41, 0.05), transparent 20rem);
+    }
+
+    #egg::before {
+      opacity: 1;
+      background:
+        linear-gradient(90deg, rgba(139, 158, 184, 0.07) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(196, 161, 90, 0.065) 1px, transparent 1px),
+        radial-gradient(circle at 18% 72%, rgba(255, 255, 255, 0.13), transparent 19rem),
+        radial-gradient(circle at 82% 18%, rgba(74, 57, 41, 0.05), transparent 20rem);
+      background-size: 48px 48px, 48px 48px, auto, auto;
+      animation: pageGridDrift 22s linear infinite;
+    }
+
+    #finish::before {
+      opacity: 1;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.13), transparent 18rem),
+        radial-gradient(circle at 86% 78%, rgba(74, 57, 41, 0.05), transparent 20rem),
+        repeating-linear-gradient(135deg, transparent 0 26px, rgba(111, 143, 134, 0.055) 26px 28px, transparent 28px 56px);
+    }
+
+    #about::after,
+    #dashboard::after,
+    #data::after,
+    #finish::after {
+      color: var(--watermark);
+    }
+
+    #home .status:nth-child(n) {
+      --status-accent: transparent;
+      --status-glow: transparent;
+    }
+
+    #home .status::before,
+    #home .status::after {
+      opacity: 0;
+    }
+
+    #home .status:hover {
+      border-color: var(--line);
+    }
+
+    .about-card:nth-child(n),
+    .story-item:nth-child(n) {
+      --about-accent: var(--accent-main);
+      --about-glow: var(--accent-main-soft);
+      --story-accent: var(--accent-main);
+    }
+
+    .about-card:nth-child(2n),
+    .story-item:nth-child(2n) {
+      --about-accent: var(--accent-cool);
+      --about-glow: var(--accent-cool-soft);
+      --story-accent: var(--accent-cool);
+    }
+
+    .about-card:nth-child(3n),
+    .story-item:nth-child(3n) {
+      --about-accent: var(--accent-warm);
+      --about-glow: var(--accent-warm-soft);
+      --story-accent: var(--accent-warm);
+    }
+
+    .canvas-stat:nth-child(n) {
+      --canvas-accent: var(--accent-main);
+    }
+
+    .canvas-stat:nth-child(2n) {
+      --canvas-accent: var(--accent-cool);
+    }
+
+    .canvas-stat:nth-child(3n) {
+      --canvas-accent: var(--accent-warm);
+    }
+
+    .agent-quick button:nth-child(n) {
+      --agent-chip: var(--accent-main-soft);
+    }
+
+    .agent-quick button:nth-child(2n) {
+      --agent-chip: var(--accent-cool-soft);
+    }
+
+    .agent-quick button:nth-child(3n) {
+      --agent-chip: var(--accent-warm-soft);
+    }
+
+    .game-hud span:nth-child(n) {
+      --game-accent: var(--accent-main);
+    }
+
+    .game-hud span:nth-child(2n) {
+      --game-accent: var(--accent-cool);
+    }
+
+    .game-hud span:nth-child(3n) {
+      --game-accent: var(--accent-warm);
+    }
+
+    .pill,
+    .icon-btn,
+    .scroll-cue,
+    .music-buttons button,
+    .playlist-item,
+    .photo-album,
+    .food-area-tabs button,
+    .food-review-card,
+    .tabs button,
+    .agent-quick button,
+    .agent-form button,
+    .game-actions button,
+    .game-controls button,
+    .food-modal-close {
+      border-color: rgba(255, 255, 255, 0.74);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.28)),
+        rgba(255, 255, 255, 0.38);
+      backdrop-filter: blur(26px) saturate(1.16);
+      -webkit-backdrop-filter: blur(26px) saturate(1.16);
+      box-shadow:
+        0 12px 34px rgba(85, 62, 38, 0.12),
+        0 1px 0 rgba(255, 255, 255, 0.82) inset,
+        0 -1px 0 rgba(255, 255, 255, 0.2) inset;
+    }
+
+    .pill:hover,
+    .icon-btn:hover,
+    .scroll-cue:hover,
+    .music-buttons button:hover,
+    .playlist-item:hover,
+    .playlist-item.active,
+    .photo-album:hover,
+    .photo-album.active,
+    .food-area-tabs button:hover:not(:disabled),
+    .food-area-tabs button.active,
+    .food-review-card:hover,
+    .tabs button:hover,
+    .tabs button.active,
+    .agent-quick button:hover,
+    .agent-form button:hover,
+    .game-actions button:hover,
+    .game-controls button:hover,
+    .food-modal-close:hover {
+      border-color: rgba(255, 255, 255, 0.92);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38)),
+        rgba(255, 255, 255, 0.5);
+      box-shadow:
+        0 16px 46px rgba(85, 62, 38, 0.16),
+        0 1px 0 rgba(255, 255, 255, 0.94) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.22) inset;
+    }
+
+    .pill.active {
+      border-color: rgba(255, 255, 255, 0.86);
+      background:
+        linear-gradient(145deg, rgba(58, 40, 32, 0.9), rgba(58, 40, 32, 0.74)),
+        var(--text);
+      color: var(--bg);
+      box-shadow:
+        0 14px 38px rgba(58, 40, 32, 0.22),
+        0 1px 0 rgba(255, 255, 255, 0.24) inset;
+    }
+
+    .pill:focus-visible,
+    .icon-btn:focus-visible,
+    .scroll-cue:focus-visible,
+    .music-buttons button:focus-visible,
+    .playlist-item:focus-visible,
+    .photo-album:focus-visible,
+    .food-area-tabs button:focus-visible,
+    .food-review-card:focus-visible,
+    .tabs button:focus-visible,
+    .agent-quick button:focus-visible,
+    .agent-form button:focus-visible,
+    .game-actions button:focus-visible,
+    .game-controls button:focus-visible,
+    .food-modal-close:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.72);
+      outline-offset: 3px;
+    }
+
+    body[data-theme="sunset"] .pill,
+    body[data-theme="sunset"] .icon-btn,
+    body[data-theme="sunset"] .scroll-cue,
+    body[data-theme="sunset"] .music-buttons button,
+    body[data-theme="sunset"] .playlist-item,
+    body[data-theme="sunset"] .photo-album,
+    body[data-theme="sunset"] .food-area-tabs button,
+    body[data-theme="sunset"] .food-review-card,
+    body[data-theme="sunset"] .tabs button,
+    body[data-theme="sunset"] .agent-quick button,
+    body[data-theme="sunset"] .agent-form button,
+    body[data-theme="sunset"] .game-actions button,
+    body[data-theme="sunset"] .game-controls button,
+    body[data-theme="sunset"] .food-modal-close {
+      border-color: rgba(255, 255, 255, 0.28);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+        rgba(255, 255, 255, 0.11);
+      box-shadow:
+        0 14px 42px rgba(0, 0, 0, 0.34),
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 -1px 0 rgba(255, 255, 255, 0.08) inset;
+    }
+
+    body[data-theme="sunset"] .pill:hover,
+    body[data-theme="sunset"] .icon-btn:hover,
+    body[data-theme="sunset"] .scroll-cue:hover,
+    body[data-theme="sunset"] .music-buttons button:hover,
+    body[data-theme="sunset"] .playlist-item:hover,
+    body[data-theme="sunset"] .playlist-item.active,
+    body[data-theme="sunset"] .photo-album:hover,
+    body[data-theme="sunset"] .photo-album.active,
+    body[data-theme="sunset"] .food-area-tabs button:hover:not(:disabled),
+    body[data-theme="sunset"] .food-area-tabs button.active,
+    body[data-theme="sunset"] .food-review-card:hover,
+    body[data-theme="sunset"] .tabs button:hover,
+    body[data-theme="sunset"] .tabs button.active,
+    body[data-theme="sunset"] .agent-quick button:hover,
+    body[data-theme="sunset"] .agent-form button:hover,
+    body[data-theme="sunset"] .game-actions button:hover,
+    body[data-theme="sunset"] .game-controls button:hover,
+    body[data-theme="sunset"] .food-modal-close:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.12)),
+        rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 18px 52px rgba(0, 0, 0, 0.42),
+        0 1px 0 rgba(255, 255, 255, 0.3) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        position: absolute;
+      }
+
+      .page {
+        padding: 100px 26px 46px;
+      }
+
+      #photo.page,
+      #food.page {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .content {
+        padding: 24px;
+      }
+
+      .home-card,
+      .data-layout,
+      .food-map-layout,
+      .canvas-layout,
+      .feature-layout,
+      .music-player,
+      .game-card {
+        grid-template-columns: 1fr;
+      }
+
+      .food-map-stage,
+      .food-detail {
+        min-height: 430px;
+      }
+
+      .food-modal-card {
+        grid-template-columns: 1fr;
+      }
+
+      .food-tier-label {
+        min-height: 62px;
+      }
+
+      .food-review-layout {
+        padding-right: 0;
+      }
+
+      .food-mascot {
+        top: auto;
+        right: 18px;
+        bottom: 18px;
+        width: 112px;
+        min-height: 112px;
+        opacity: 0.78;
+        transform-origin: bottom right;
+      }
+
+      .food-mascot-label {
+        display: none;
+      }
+
+      .hotpot-scene {
+        transform: scale(0.72);
+        transform-origin: right bottom;
+      }
+
+      .food-region-grid {
+        grid-template-columns: 1fr;
+        inset: 78px 14px 14px;
+        overflow: auto;
+      }
+
+      .food-region-card {
+        min-height: 170px;
+      }
+
+      .food-detail {
+        grid-template-rows: 190px 1fr;
+      }
+
+      .profile-panel {
+        min-height: 390px;
+      }
+
+      .about-grid,
+      .canvas-summary,
+      .service-grid,
+      .status-grid,
+      .idea-box {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dash-group {
+        grid-column: span 12;
+      }
+
+      .gallery-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .photo-viewer {
+        grid-template-columns: 1fr;
+      }
+
+      #photo .photo-stage,
+      .photo-stage {
+        height: min(480px, calc(100vh - 300px));
+        min-height: 340px;
+        max-height: 480px;
+      }
+      #photo .photo-shelf {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      #photo .photo-album-cover {
+        height: 58px;
+        max-height: 58px;
+      }
+
+      .photo-shelf {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: none;
+        display: grid;
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .page {
+        padding: 132px 16px 34px;
+      }
+
+      .hero {
+        padding-top: 148px;
+      }
+
+      #photo.page,
+      #food.page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .content {
+        padding: 18px;
+      }
+
+      .about-grid,
+      .canvas-summary,
+      .service-grid,
+      .status-grid,
+      .idea-box {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .agent-head,
+      .agent-form {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+      }
+
+      .agent-message {
+        max-width: 100%;
+      }
+
+      .music-player {
+        min-height: auto;
+        height: auto;
+      }
+
+      .record-wrap {
+        min-height: 220px;
+      }
+
+      .music-progress {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+      }
+
+      .playlist-item {
+        grid-template-columns: 46px minmax(0, 1fr);
+      }
+
+      .playlist-item small {
+        grid-column: 2;
+      }
+
+      .game-card {
+        padding: 14px;
+      }
+
+      .game-hud {
+        grid-template-columns: 1fr;
+      }
+
+      .game-stage {
+        height: 330px;
+        min-height: 280px;
+        overflow: hidden;
+      }
+
+      .food-tier-items {
+        grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+        gap: 6px;
+      }
+
+      .food-tier-row {
+        grid-template-columns: minmax(64px, 0.2fr) minmax(0, 1fr);
+        gap: 6px;
+      }
+
+      .food-tier-label {
+        font-size: 15px;
+        padding: 6px;
+      }
+
+      .food-modal {
+        padding: 14px;
+      }
+
+      .food-modal-image {
+        min-height: 240px;
+      }
+
+      .photo-shelf {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+      }
+
+      #photo .photo-stage,
+      .photo-stage {
+        height: 360px;
+        min-height: 320px;
+        max-height: 360px;
+      }
+      #photo .photo-shelf {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      #photo .photo-album-cover {
+        height: 56px;
+        max-height: 56px;
+      }
+
+      .section-head,
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .bar-row {
+        grid-template-columns: 42px minmax(0, 1fr) 62px;
+      }
+
+      .food-map-stage {
+        min-height: 360px;
+      }
+
+      .food-map-toolbar {
+        align-items: flex-start;
+      }
+
+      .food-map-kicker {
+        max-width: calc(100% - 102px);
+      }
+
+      .food-pin-label {
+        font-size: 12px;
+        padding: 5px 8px;
+      }
+
+      .food-detail {
+        min-height: auto;
+        grid-template-rows: 160px 1fr;
+      }
+
+      .food-detail-body h3 {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-height: 760px) {
+      #food.page {
+        padding-top: 58px;
+        padding-bottom: 10px;
+      }
+
+      #food .content {
+        padding: 12px;
+      }
+
+      #food .section-head {
+        margin-bottom: 6px;
+      }
+
+      #food .section-head h2 {
+        font-size: 30px;
+      }
+
+      #food .section-head p {
+        font-size: 13px;
+      }
+
+      .food-area-tabs button {
+        min-height: 28px;
+        padding: 4px 10px;
+      }
+
+      .food-tier-board {
+        gap: 5px;
+      }
+
+      .food-tier-row {
+        padding: 5px;
+      }
+
+      .food-tier-label {
+        min-height: 62px;
+        font-size: 16px;
+      }
+
+      .food-tier-items {
+        grid-template-columns: repeat(auto-fill, minmax(74px, 92px));
+        gap: 5px;
+      }
+
+      .food-review-card {
+        min-height: 74px;
+      }
+
+      #music.page {
+        padding-top: 58px;
+        padding-bottom: 10px;
+      }
+
+      #photo.page {
+        padding-top: 29px;
+        padding-bottom: 10px;
+      }
+
+      #photo .content,
+      #music .content {
+        padding: 14px;
+      }
+
+      #photo .section-head,
+      #music .section-head {
+        margin-bottom: 8px;
+      }
+
+      #photo .section-head h2,
+      #music .section-head h2 {
+        font-size: 30px;
+      }
+
+      #photo .section-head p,
+      #music .section-head p {
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .photo-viewer {
+        height: calc(100vh - 162px);
+      }
+
+      #photo .photo-stage,
+      .photo-stage {
+        height: min(440px, calc(100vh - 260px));
+        min-height: 320px;
+        max-height: 440px;
+      }
+
+      .music-player {
+        height: calc(100vh - 168px);
+        gap: 12px;
+      }
+
+      .turntable-card,
+      .playlist-card {
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .record-wrap {
+        min-height: 190px;
+      }
+
+      .record {
+        width: min(210px, 44vw);
+      }
+
+      .music-controls {
+        padding: 10px;
+      }
+
+      .music-now {
+        gap: 5px;
+      }
+
+      .music-now h3,
+      .playlist-head h3 {
+        font-size: 22px;
+      }
+
+      .playlist-item {
+        min-height: 54px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wallpaper" aria-hidden="true"></div>
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="music-wave-bg" id="musicWaveBg" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <nav class="nav" aria-label="页面导航">
+      <a class="pill" href="#about">关于</a>
+      <a class="pill" href="#dashboard">Canvas 工作台</a>
+      <a class="pill" href="#photo">摄影</a>
+      <a class="pill" href="#food">美食</a>
+      <a class="pill" href="#music">音乐</a>
+      <a class="pill" href="#data">数据</a>
+      <a class="pill" href="#egg">彩蛋</a>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeButton" type="button" aria-label="切换日夜主题">☾</button>
+      <a class="pill" href="README.txt">README</a>
+    </div>
+  </header>
+
+  <main class="pager" id="pager">
+    <section class="hero page" id="home" aria-label="个人主页封面" data-page-title="首页">
+      <div class="home-card">
+        <div class="profile-panel glass">
+          <button class="avatar" id="avatarButton" type="button" aria-label="点击头像显示一句吐槽">
+            <img src="assets/images/734718531a015000a2b1f785e77b1807.jpg" alt="武昂达自拍头像">
+          </button>
+          <h1 class="gradient-text">武昂达</h1>
+          <p class="type-line" id="typeLine">codex体验官 / 摄影爱好者 / 美食探索家</p>
+          <div class="links" aria-label="个人链接">
+            <a href="#dashboard">Canvas 工作台</a>
+            <a href="#data">小数据</a>
+            <a href="#egg">交互彩蛋</a>
+          </div>
+        </div>
+
+        <div class="dash-panel glass">
+          <div class="clock glass">
+            <div class="clock-time" id="clockTime">00:00:00</div>
+            <div class="clock-date" id="clockDate">正在读取时间...</div>
+          </div>
+          <div class="hitokoto glass" id="hitokoto">
+            “要么庸俗，要么孤独。”
+          </div>
+          <div class="status-grid">
+            <div class="status glass">
+              <small>Canvas DDL</small>
+              <strong id="studyTotal">待同步</strong>
+            </div>
+            <div class="status glass">
+              <small>美食测评</small>
+              <strong id="foodTotal">0家</strong>
+            </div>
+            <div class="status glass">
+              <small>摄影集</small>
+              <strong id="photoTotal">0</strong>
+            </div>
+            <div class="status glass">
+              <small>彩蛋 Agent</small>
+              <strong id="coffeeTotal">DeepSeek</strong>
+            </div>
+            <div class="status glass">
+              <small>音乐歌单</small>
+              <strong id="musicTotal">0首</strong>
+            </div>
+            <div class="status glass">
+              <small>页面模块</small>
+              <strong id="stepTotal">8页</strong>
+            </div>
+          </div>
+          <div class="progress-list" aria-label="时间进度">
+            <div class="progress-item">
+              <div class="progress-title"><span>今日进度</span><span id="dayPercent">0%</span></div>
+              <div class="track"><div class="fill" id="dayFill"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-title"><span>本周进度</span><span id="weekPercent">0%</span></div>
+              <div class="track"><div class="fill" id="weekFill"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="scroll-cue" id="nextPageButton" type="button">点击或滚轮进入下一页 ↓</button>
+    </section>
+
+    <section class="page" id="about" data-page-title="关于">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>武昂达主页使用说明书✍</h2>
+            <p>主页介绍</p>
+          </div>
+        </div>
+        <div class="about-grid">
+          <div class="about-card"><b>我是谁</b><span>武昂达，智能感知工程专业，大二本科生。本主页首先作为课程作业，然后发现vibe coding相当好玩，还在持续更新中😋。</span></div>
+          <div class="about-card"><b>我干了些什么</b><span>Canvas DDL 工作台、DeepSeek 彩蛋 Agent、美食大测评和摄影集。这么多页面，你不会觉得无聊的，对吧对吧(★ ω ★)</span></div>
+          <div class="about-card"><b>我的审美</b><span>比较喜欢活泼、灵动、有点技术感的页面；我会尽力避免空洞寡淡、AI 味太重的套话🤖。</span></div>
+          <div class="about-card"><b>免责声明</b><span>整个页面里有 AI 参与痕迹。另一个武昂达（agent）只负责陪聊，我已狠狠限制其不会泄露密钥和隐私🤬。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="dashboard" data-page-title="Canvas 工作台">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>Canvas 工作台🖊</h2>
+            <p>用canvasAPI搭建个人工作台，包含课程待办和 Canvas 通知。（看到ddl记得提醒我😭🙇‍）</p>
+          </div>
+        </div>
+        <div class="dashboard-grid" id="dashboardGrid"></div>
+      </div>
+    </section>
+
+    <section class="page" id="photo" data-page-title="摄影">
+      <div class="content glass photo-content">
+        <div class="section-head">
+          <div>
+            <h2>摄影观察📷</h2>
+            <p>欢迎来到我的个人摄影展，看看我镜头里的琐碎生活和细小幸福😃。</p>
+          </div>
+        </div>
+        <div class="feature-layout photo-layout">
+          <div class="photo-viewer">
+            <div class="photo-stage empty" id="photoStage">
+              <div class="photo-empty-copy">
+                <h3>我的摄影集 ↓</h3>
+                <p>右侧收着四本摄影集。它们像四种不同的时间和情绪，点开其中一本，左侧就会开始播放这一组照片。之后在大图左半边和右半边单击，可以切换上一张和下一张。</p>
+              </div>
+            </div>
+            <aside class="photo-shelf" id="photoShelf" aria-label="摄影集列表"></aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="food" data-page-title="美食">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>美食大测评😋</h2>
+            <p>把轰轰烈烈的美食大测评进行到底！（还在持续更新，敬请期待……</p>
+          </div>
+        </div>
+        <div class="food-review-layout" id="foodTable" aria-live="polite"></div>
+        <div class="food-mascot" aria-hidden="true">
+          <div class="food-mascot-label">开饭开饭</div>
+          <div class="hotpot-scene">
+            <span class="hotpot-steam s1"></span>
+            <span class="hotpot-steam s2"></span>
+            <span class="hotpot-steam s3"></span>
+            <span class="chopstick c1"></span>
+            <span class="chopstick c2"></span>
+            <span class="food-spark left"></span>
+            <span class="food-spark right"></span>
+            <div class="hotpot-food"></div>
+            <div class="hotpot"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="music" data-page-title="音乐">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>我最爱的歌单🎵</h2>
+            <p>陪伴过我很久很久的几首歌，推荐给你，希望你也喜欢。</p>
+          </div>
+        </div>
+        <div class="music-player" id="musicPlayer">
+          <div class="turntable-card">
+            <div class="record-wrap" aria-hidden="true">
+              <div class="record" id="musicRecord"></div>
+              <div class="tonearm" id="musicTonearm"><span class="needle"></span></div>
+            </div>
+            <div class="music-controls">
+              <div class="music-buttons">
+                <button type="button" id="musicPrev" aria-label="上一首">←</button>
+                <button class="play-toggle" type="button" id="musicPlay" aria-label="播放或暂停">播放</button>
+                <button type="button" id="musicNext" aria-label="下一首">→</button>
+              </div>
+              <div class="music-progress">
+                <span id="musicCurrent">0:00</span>
+                <input id="musicSeek" type="range" min="0" max="100" value="0" aria-label="播放进度">
+                <span id="musicDuration">0:00</span>
+              </div>
+              <label class="volume-control">音量 <input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.72"></label>
+            </div>
+            <div class="music-now">
+              <h3 id="musicTitle">待播放</h3>
+              <p id="musicArtist">选择一首歌开始。</p>
+              <p id="musicReason">如果浏览器拦截自动播放，点一下播放按钮就行。</p>
+            </div>
+            <audio id="musicAudio" preload="metadata"></audio>
+          </div>
+          <div class="playlist-card">
+            <div class="playlist-head">
+              <h3>Playlist</h3>
+              <p>点击歌单切换。这是我最爱的五首歌，如果喜欢的话我会继续添加(❤ ω ❤)。</p>
+            </div>
+            <div class="playlist-list" id="playlistList" aria-label="最爱的歌单"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="data" data-page-title="数据">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>一周生活数据📕</h2>
+            <p>我尽量每日手动录入更新，（尝试过用鸿蒙开发app，想实现个人数据实时更新，但是真的好难呐😭😭😭，老师你会理解我的对吧）</p>
+          </div>
+        </div>
+        <div class="data-layout">
+          <div class="data-card">
+            <div class="toolbar">
+              <div class="tabs" role="tablist" aria-label="切换数据指标">
+                <button class="active" type="button" data-metric="study">学习</button>
+                <button type="button" data-metric="photo">摄影</button>
+                <button type="button" data-metric="food">美食</button>
+                <button type="button" data-metric="coffee">咖啡</button>
+                <button type="button" data-metric="steps">步数</button>
+              </div>
+              <label class="range-control">最近 <strong id="dayCount">7</strong> 天 <input id="dayRange" type="range" min="3" max="7" value="7"></label>
+            </div>
+            <div class="bars" id="bars" aria-live="polite"></div>
+          </div>
+          <aside class="data-card">
+            <div class="story-list" id="storyList"></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="egg" data-page-title="彩蛋">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>和另一个我聊两句吧😊</h2>
+            <p>这是一个调用本地后端 Agent API 的主页彩蛋。你可以把它当成另一个我。</p>
+          </div>
+        </div>
+        <div class="egg-card agent-card">
+          <div class="agent-head">
+            <div>
+              <h3>网页版武昂达agent</h3>
+              <p>可以聊主页、摄影、美食、音乐、AI、大学生活和日常闲话。隐私和密钥不会告诉你哦🙅‍。</p>
+            </div>
+            <span class="agent-status" id="agentStatus">Local Agent</span>
+          </div>
+          <div class="agent-quick">
+            <button type="button" data-agent-prompt="最近有什么歌推荐？">聊聊音乐</button>
+            <button type="button" data-agent-prompt="你平时喜欢拍什么？">聊聊摄影</button>
+            <button type="button" data-agent-prompt="交大附近有什么好吃的？">聊聊美食</button>
+            <button type="button" data-agent-prompt="大学生活最离谱的地方是什么？">大学生活</button>
+            <button type="button" data-agent-prompt="我今天有点烦，你会怎么说？">情绪急救</button>
+            <button type="button" data-agent-prompt="随便吐槽两句最近的生活。">随便吐槽</button>
+          </div>
+          <div class="agent-chat" id="agentChat" aria-live="polite">
+            <div class="agent-message bot">
+              哈啰！欢迎来到网页版武昂达agent。主页、音乐、摄影、AI、大学生活都能聊，隐私、账号和密钥不可以哦😊。
+            </div>
+          </div>
+          <form class="agent-form" id="agentForm">
+            <input id="agentInput" type="text" maxlength="240" autocomplete="off" placeholder="输入一句想问的话..." aria-label="和另一个我对话">
+            <button type="submit">发送</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="finish" data-page-title="小游戏">
+      <div class="content glass">
+        <div class="section-head">
+          <div>
+            <h2>最后玩个游戏吧💻</h2>
+            <p>主页里元素已变成砖块，用小球击碎他们⚾，不破不立，获得新的灵感吧💡！</p>
+          </div>
+        </div>
+        <div class="game-card" id="miniGame">
+          <div class="game-copy">
+            <div>
+              <h3>主页打砖块</h3>
+              <p>左右移动挡板，打碎摄影、美食、音乐和 Canvas 卡片。清空砖块就算通关。</p>
+            </div>
+            <div class="game-hud" aria-label="小游戏状态">
+              <span>分数 <b id="gameScore">0</b></span>
+              <span>剩余 <b id="gameTime">0</b></span>
+              <span>生命 <b id="gameLives">3</b></span>
+            </div>
+            <div class="game-actions">
+              <button type="button" id="gameStart">开始一局</button>
+              <button type="button" id="gameReset">重置</button>
+            </div>
+            <div class="game-note" id="gameNote">按“开始一局”，用方向键、按钮或鼠标移动挡板。</div>
+          </div>
+          <div class="game-board">
+            <div class="game-stage" id="gameStage" aria-label="主页打砖块小游戏区域">
+              <div class="game-wall" id="gameWall"></div>
+              <div class="game-ball" id="gameBall"></div>
+              <div class="game-paddle" id="gamePaddle"></div>
+            </div>
+            <div class="game-controls" aria-label="小游戏移动按钮">
+              <button type="button" id="gameLeft">← 左移</button>
+              <button type="button" id="gameRight">右移 →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="food-modal" id="foodModal" aria-hidden="true">
+    <div class="food-modal-card" role="dialog" aria-modal="true" aria-label="美食测评详情">
+      <div class="food-modal-image">
+        <img id="foodModalImage" src="" alt="">
+      </div>
+      <div class="food-modal-body">
+        <button class="food-modal-close" id="foodModalClose" type="button" aria-label="关闭美食详情">×</button>
+        <div class="food-modal-meta" id="foodModalMeta"></div>
+        <h3 id="foodModalTitle">待填写店名</h3>
+        <p id="foodModalLocation"></p>
+        <p id="foodModalReview"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">你好。</div>
+
+  <script src="assets/data/food_reviews.js"></script>
+  <script src="assets/data/playlist_data.js"></script>
+  <script>
+    const profile = {
+      quotes: [
+        "今日吐槽：重度咖啡因爱好者。",
+        "今日吐槽：主页可以参考风格，数据必须属于自己。",
+        "今日吐槽：别让页面替你说大话，能表达清楚就很好。",
+        "今日吐槽：图表不好看时，先检查标签是不是太挤。"
+      ],
+      hitokoto: [
+        "真实的小数据，比空泛的大叙事更有生命力。",
+        "把生活切成小块记录下来，普通的一周也会露出纹理。",
+        "AI 负责给我草稿，我负责判断它有没有说人话。",
+        "拍照是在练习观察，美食是在练习认真生活。",
+        "今天也许不完美，但可以先完成一个能看的版本。"
+      ],
+      photoCollections: [
+        {
+          id: "jiaoda",
+          name: "交大里的片段",
+          intro: "校园片段来自身边反复品味的场景，我想留下熟悉感里闪烁的光。",
+          shots: [
+            { src: "assets/photos/交大里的片段1.jpg", title: "片段 1", note: "校园空间里的第一眼。" },
+            { src: "assets/photos/交大里的片段2.jpg", title: "片段 2", note: "把熟悉的地方重新看一遍。" },
+            { src: "assets/photos/交大里的片段3.jpg", title: "片段 3", note: "光线让画面慢下来。" },
+            { src: "assets/photos/交大里的片段4.jpg", title: "片段 4", note: "留下这个季节的颜色。" },
+            { src: "assets/photos/交大里的片段5.jpg", title: "片段 5", note: "建筑和树影总能讲点什么。" },
+            { src: "assets/photos/交大里的片段6.jpg", title: "片段 6", note: "熟悉角落里的新鲜感。" },
+            { src: "assets/photos/交大里的片段7.jpg", title: "片段 7", note: "一张安静但有温度的图。" },
+            { src: "assets/photos/交大里的片段8.jpg", title: "片段 8", note: "把日常变成值得回看的切片。" }
+          ]
+        },
+        {
+          id: "night",
+          name: "夜的命名术",
+          intro: "夜晚更像放大的情绪，颜色更深，动作更直接，光也更有戏剧性。",
+          shots: [
+            { src: "assets/photos/夜的命名术1.jpg", title: "夜的命名术 1", note: "让夜晚先开口说话。" },
+            { src: "assets/photos/夜的命名术2.jpg", title: "夜的命名术 2", note: "高反差里更容易留下情绪。" },
+            { src: "assets/photos/夜的命名术3.jpg", title: "夜的命名术 3", note: "把动作和火光都拉满。" },
+            { src: "assets/photos/夜的命名术4.jpg", title: "夜的命名术 4", note: "黑色背景衬出更强的呼吸感。" },
+            { src: "assets/photos/夜的命名术5.jpg", title: "夜的命名术 5", note: "这是夜里最像电影的一刻。" }
+          ]
+        },
+        {
+          id: "youth",
+          name: "电草见证过的青春",
+          intro: "草地、毕业袍、朋友和那种只会出现一次的松弛感，都在这里。",
+          shots: [
+            { src: "assets/photos/电草见证过的青春1.jpg", title: "青春 1", note: "故事从草地中央开始。" },
+            { src: "assets/photos/电草见证过的青春2.jpg", title: "青春 2", note: "人物关系比姿势更重要。" },
+            { src: "assets/photos/电草见证过的青春3.jpg", title: "青春 3", note: "轻松感是最难摆出来的。" },
+            { src: "assets/photos/电草见证过的青春4.jpg", title: "青春 4", note: "这组照片更像一段告别。" }
+          ]
+        },
+        {
+          id: "street",
+          name: "那些年扫过的街",
+          intro: "我喜欢扫街，因为城市不会配合摄影师，但它会把答案放在街角。",
+          shots: [
+            { src: "assets/photos/那些年扫过的街.jpg", title: "扫街 1", note: "城市给出的第一个线索。" },
+            { src: "assets/photos/那些年扫过的街2.jpg", title: "扫街 2", note: "一半是建筑，一半是呼吸。" },
+            { src: "assets/photos/那些年扫过的街3.jpg", title: "扫街 3", note: "街头最有趣的是偶然。" },
+            { src: "assets/photos/那些年扫过的街4.jpg", title: "扫街 4", note: "让线条自己说话。" },
+            { src: "assets/photos/那些年扫过的街5.jpg", title: "扫街 5", note: "这是我最喜欢的留白之一。" }
+          ]
+        }
+      ],
+      photoNotes: [
+        { title: "拍摄偏好", text: "更喜欢自然光和现场感，少摆拍，尽量保留空间里的真实秩序。" },
+        { title: "常用主题", text: "街头光影、窗边静物、雨后路面、店铺招牌和食物上桌前的瞬间。" },
+        { title: "后期原则", text: "轻微调色，保持干净和克制；让画面看起来像记忆，不像滤镜。" },
+        { title: "下次计划", text: "做一组“从学习地点到晚饭路线”的照片日记。" }
+      ],
+      foodList: [
+        { name: "巷口牛肉面", type: "面食", score: 9.1, note: "汤底厚，适合下课后快速回血。" },
+        { name: "窗边咖啡馆", type: "咖啡", score: 8.7, note: "适合写作业，光线比咖啡更稳定。" },
+        { name: "夜市烤串", type: "夜宵", score: 8.5, note: "烟火气很足，但排队时间要算进成本。" },
+        { name: "周末甜品店", type: "甜点", score: 8.9, note: "拍照好看，适合做主页配色参考。" }
+      ],
+      foodMap: [
+        {
+          id: "beijing",
+          city: "北京",
+          cx: 69.7,
+          cy: 49.9,
+          intro: "胡同、大学路和深夜烟火气，是北京这一站的关键词。",
+          areas: [
+            {
+              id: "beijing-wudaokou",
+              name: "五道口",
+              x: 44.0,
+              y: 62.6,
+              shop: "巷口牛肉面",
+              dish: "红烧牛肉面",
+              score: 9.1,
+              type: "面食",
+              image: "assets/photos/那些年扫过的街.jpg",
+              address: "北京市海淀区成府路附近",
+              review: "汤底厚、面条有劲，最适合作业写到一半出来快速回血。价格友好，缺点是饭点需要排队。"
+            },
+            {
+              id: "beijing-hutong",
+              name: "鼓楼胡同",
+              x: 46.9,
+              y: 65.0,
+              shop: "胡同铜锅涮肉",
+              dish: "手切羊肉",
+              score: 8.8,
+              type: "涮肉",
+              image: "assets/photos/夜的命名术1.jpg",
+              address: "北京市东城区鼓楼东大街附近",
+              review: "炭火味和芝麻酱很有记忆点，适合冬天和朋友慢慢吃。环境不精致，但热闹得刚刚好。"
+            }
+          ]
+        },
+        {
+          id: "shanghai",
+          city: "上海",
+          cx: 78.0,
+          cy: 64.1,
+          intro: "上海这一页只保留五角场和闵行两个提示点，点位更清楚。",
+          areas: [
+            {
+              id: "shanghai-wujiaochang",
+              name: "五角场",
+              x: 58.1,
+              y: 31.3,
+              shop: "五角场夜市烤串",
+              dish: "羊肉串与烤馕",
+              score: 8.9,
+              type: "夜宵",
+              image: "assets/photos/夜的命名术3.jpg",
+              address: "上海市杨浦区五角场附近",
+              review: "烟火气很强，适合晚上和朋友一起去。味道直接、气氛热闹，排队时间要算进体验成本。"
+            },
+            {
+              id: "shanghai-minhang",
+              name: "闵行",
+              x: 49.3,
+              y: 54.9,
+              shop: "闵行窗边咖啡馆",
+              dish: "冰拿铁与巴斯克",
+              score: 8.7,
+              type: "咖啡",
+              image: "assets/photos/交大里的片段3.jpg",
+              address: "上海市闵行区东川路附近",
+              review: "更像学习日的补给站，光线稳定、座位舒服。咖啡不是最惊艳的，但复访意愿很高。"
+            }
+          ]
+        },
+        {
+          id: "shanxi",
+          city: "山西",
+          cx: 63.3,
+          cy: 53.2,
+          intro: "山西这一站重点交给面、醋和热气腾腾的碳水快乐。",
+          areas: [
+            {
+              id: "shanxi-taiyuan",
+              name: "太原",
+              x: 51.6,
+              y: 53.6,
+              shop: "老城刀削面",
+              dish: "过油肉刀削面",
+              score: 9.3,
+              type: "面食",
+              image: "assets/photos/电草见证过的青春1.jpg",
+              address: "山西省太原市迎泽区柳巷附近",
+              review: "面片边缘薄、中间有嚼劲，浇头很香。加一点醋之后层次会更明显，是这张地图里的高分选手。"
+            },
+            {
+              id: "shanxi-pingyao",
+              name: "平遥",
+              x: 44.6,
+              y: 66.2,
+              shop: "古城碗托",
+              dish: "凉拌碗托",
+              score: 8.6,
+              type: "小吃",
+              image: "assets/photos/DSC06033-已增强-降噪.jpg",
+              address: "山西省晋中市平遥古城内",
+              review: "口感滑韧，蒜醋汁很提神。它不是大菜，但很适合作为逛古城中途的小奖励。"
+            }
+          ]
+        }
+      ],
+      weekData: [
+        { day: "周一", study: 2.5, photo: 3, food: 1, coffee: 1, steps: 5243, mood: "重启周：先找回节奏。" },
+        { day: "周二", study: 3.0, photo: 5, food: 1, coffee: 1, steps: 6817, mood: "效率平稳，晚上做了小复盘。" },
+        { day: "周三", study: 4.5, photo: 8, food: 2, coffee: 2, steps: 7426, mood: "灵感比较多，图表也改顺了。" },
+        { day: "周四", study: 2.0, photo: 4, food: 1, coffee: 1, steps: 6138, mood: "状态普通，但完成了基础任务。" },
+        { day: "周五", study: 5.0, photo: 7, food: 2, coffee: 2, steps: 8349, mood: "集中处理作业，进度明显。" },
+        { day: "周六", study: 3.5, photo: 12, food: 3, coffee: 0, steps: 9276, mood: "走路多，脑子反而清醒。" },
+        { day: "周日", study: 4.0, photo: 10, food: 2, coffee: 1, steps: 7048, mood: "整理笔记，准备提交版本。" }
+      ]
+    };
+
+    const metricMeta = {
+      study: { label: "学习时长", unit: "h", color: "linear-gradient(90deg, var(--blue), var(--green))" },
+      photo: { label: "摄影素材", unit: "张", color: "linear-gradient(90deg, #93c5fd, #f59e0b)" },
+      food: { label: "美食记录", unit: "次", color: "linear-gradient(90deg, #f97316, #facc15)" },
+      coffee: { label: "咖啡杯数", unit: "杯", color: "linear-gradient(90deg, var(--gold), var(--pink))" },
+      steps: { label: "步数", unit: "步", color: "linear-gradient(90deg, var(--green), var(--blue))" }
+    };
+
+    const bars = document.querySelector("#bars");
+    const storyList = document.querySelector("#storyList");
+    const dashboardGrid = document.querySelector("#dashboardGrid");
+    const photoStage = document.querySelector("#photoStage");
+    const photoShelf = document.querySelector("#photoShelf");
+    const foodTable = document.querySelector("#foodTable");
+    const foodModal = document.querySelector("#foodModal");
+    const foodModalImage = document.querySelector("#foodModalImage");
+    const foodModalMeta = document.querySelector("#foodModalMeta");
+    const foodModalTitle = document.querySelector("#foodModalTitle");
+    const foodModalLocation = document.querySelector("#foodModalLocation");
+    const foodModalReview = document.querySelector("#foodModalReview");
+    const pager = document.querySelector("#pager");
+    const pages = Array.from(document.querySelectorAll(".page"));
+    const navLinks = Array.from(document.querySelectorAll(".nav a"));
+    const dayRange = document.querySelector("#dayRange");
+    const dayCount = document.querySelector("#dayCount");
+    const metricButtons = Array.from(document.querySelectorAll("[data-metric]"));
+    const playlist = Array.isArray(window.favoritePlaylist) ? window.favoritePlaylist : [];
+    const playlistList = document.querySelector("#playlistList");
+    const musicAudio = document.querySelector("#musicAudio");
+    const musicRecord = document.querySelector("#musicRecord");
+    const musicTonearm = document.querySelector("#musicTonearm");
+    const musicWaveBg = document.querySelector("#musicWaveBg");
+    const musicTitle = document.querySelector("#musicTitle");
+    const musicArtist = document.querySelector("#musicArtist");
+    const musicReason = document.querySelector("#musicReason");
+    const musicPlay = document.querySelector("#musicPlay");
+    const musicPrev = document.querySelector("#musicPrev");
+    const musicNext = document.querySelector("#musicNext");
+    const musicSeek = document.querySelector("#musicSeek");
+    const musicCurrent = document.querySelector("#musicCurrent");
+    const musicDuration = document.querySelector("#musicDuration");
+    const musicVolume = document.querySelector("#musicVolume");
+    const playlistColors = ["#92e6b5", "#ffd36d", "#93c5fd", "#f3a6b8", "#d8b4fe", "#fdba74"];
+    let activeMetric = "study";
+    let activeCollection = profile.photoCollections[0].id;
+    let activeShotIndex = -1;
+    let activeSongIndex = 0;
+    let isSeekingMusic = false;
+    let musicNoteTimer = 0;
+    let activePage = 0;
+    let isPaging = false;
+
+    function formatValue(value, metric) {
+      if (metric === "steps") return `${Number(value).toLocaleString("zh-CN")} 步`;
+      return `${value}${metricMeta[metric].unit}`;
+    }
+
+    function renderData() {
+      const count = Number(dayRange.value);
+      const data = profile.weekData.slice(-count);
+      const max = Math.max(...data.map(item => item[activeMetric]));
+      dayCount.textContent = count;
+
+      bars.innerHTML = data.map(item => {
+        const percent = Math.max(7, Math.round((item[activeMetric] / max) * 100));
+        return `
+          <div class="bar-row">
+            <div class="bar-label">${item.day}</div>
+            <div class="track" title="${metricMeta[activeMetric].label}：${formatValue(item[activeMetric], activeMetric)}">
+              <div class="fill" style="width:${percent}%; background:${metricMeta[activeMetric].color}"></div>
+            </div>
+            <div class="bar-value">${formatValue(item[activeMetric], activeMetric)}</div>
+          </div>
+        `;
+      }).join("");
+
+      const total = data.reduce((sum, item) => sum + item[activeMetric], 0);
+      const best = data.reduce((top, item) => item[activeMetric] > top[activeMetric] ? item : top, data[0]);
+      const average = activeMetric === "steps" ? Math.round(total / data.length) : (total / data.length).toFixed(1);
+      storyList.innerHTML = `
+        <div class="story-item"><b>${metricMeta[activeMetric].label}总计</b><span>${formatValue(activeMetric === "steps" ? total : Number(total.toFixed(1)), activeMetric)}，记录范围为最近 ${data.length} 天。</span></div>
+        <div class="story-item"><b>峰值日</b><span>${best.day} 最高，达到 ${formatValue(best[activeMetric], activeMetric)}。</span></div>
+        <div class="story-item"><b>平均值</b><span>平均每天 ${formatValue(average, activeMetric)}。${data[data.length - 1].mood}</span></div>
+      `;
+    }
+
+    function renderTotals() {
+      const photos = profile.photoCollections.reduce((sum, item) => sum + item.shots.length, 0);
+      document.querySelector("#studyTotal").textContent = "同步中";
+      document.querySelector("#coffeeTotal").textContent = "DeepSeek";
+      document.querySelector("#musicTotal").textContent = `${playlist.length}首`;
+      document.querySelector("#stepTotal").textContent = `${pages.length}页`;
+      document.querySelector("#photoTotal").textContent = `${photos}张`;
+      document.querySelector("#foodTotal").textContent = `${(window.foodReviews || []).length}家`;
+    }
+
+    function formatMusicTime(value) {
+      if (!Number.isFinite(value)) return "0:00";
+      const minutes = Math.floor(value / 60);
+      const seconds = Math.floor(value % 60).toString().padStart(2, "0");
+      return `${minutes}:${seconds}`;
+    }
+
+    function spawnMusicNote() {
+      if (!musicWaveBg || !document.body.classList.contains("music-playing")) return;
+      const note = document.createElement("span");
+      const symbols = ["♪", "♫", "♬", "♩"];
+      note.className = "music-note";
+      note.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      note.style.setProperty("--note-x", `${8 + Math.random() * 84}%`);
+      note.style.setProperty("--note-y", `${24 + Math.random() * 58}%`);
+      note.style.setProperty("--note-size", `${22 + Math.random() * 28}px`);
+      note.style.setProperty("--note-drift", `${Math.round(-80 + Math.random() * 160)}px`);
+      note.style.setProperty("--note-rotate", `${Math.round(-18 + Math.random() * 36)}deg`);
+      note.style.setProperty("--note-duration", `${3.6 + Math.random() * 2.2}s`);
+      musicWaveBg.appendChild(note);
+      note.addEventListener("animationend", () => note.remove(), { once: true });
+    }
+
+    function setMusicNotesActive(isActive) {
+      window.clearInterval(musicNoteTimer);
+      musicNoteTimer = 0;
+      if (!isActive) return;
+      spawnMusicNote();
+      spawnMusicNote();
+      musicNoteTimer = window.setInterval(spawnMusicNote, 720);
+    }
+
+    function setMusicPlaying(isPlaying) {
+      musicRecord?.classList.toggle("playing", isPlaying);
+      musicTonearm?.classList.toggle("playing", isPlaying);
+      document.body.classList.toggle("music-playing", isPlaying);
+      musicWaveBg?.classList.toggle("playing", isPlaying);
+      setMusicNotesActive(isPlaying);
+      if (musicPlay) musicPlay.textContent = isPlaying ? "暂停" : "播放";
+    }
+
+    function renderPlaylist() {
+      if (!playlistList) return;
+      if (!playlist.length) {
+        playlistList.innerHTML = `<div class="canvas-empty">还没有歌单数据，请在 assets/data/playlist_data.js 里添加歌曲。</div>`;
+        return;
+      }
+      playlistList.innerHTML = playlist.map((song, index) => `
+        <button class="playlist-item ${index === activeSongIndex ? "active" : ""}" type="button" data-song-index="${index}">
+          <span class="playlist-disc" style="--disc-color:${playlistColors[index % playlistColors.length]}"></span>
+          <span class="playlist-title">
+            <b>${escapeHTML(song.title || `Song ${index + 1}`)}</b>
+            <span>${escapeHTML(song.artist || "待填写歌手")}</span>
+          </span>
+          <small>${escapeHTML(song.mood || "喜欢")}</small>
+        </button>
+      `).join("");
+    }
+
+    function loadSong(index, shouldPlay = false) {
+      if (!musicAudio || !playlist.length) return;
+      activeSongIndex = (index + playlist.length) % playlist.length;
+      const song = playlist[activeSongIndex];
+      const color = playlistColors[activeSongIndex % playlistColors.length];
+
+      musicAudio.src = song.audio || "";
+      musicAudio.load();
+      if (musicRecord) musicRecord.style.setProperty("--record-label", color);
+      if (musicTitle) musicTitle.textContent = song.title || `Song ${activeSongIndex + 1}`;
+      if (musicArtist) musicArtist.textContent = `${song.artist || "待填写歌手"} · ${song.mood || "私人歌单"}`;
+      if (musicReason) musicReason.textContent = song.reason || "这首歌的推荐语还没填写。";
+      if (musicCurrent) musicCurrent.textContent = "0:00";
+      if (musicDuration) musicDuration.textContent = "0:00";
+      if (musicSeek) musicSeek.value = 0;
+      renderPlaylist();
+      setMusicPlaying(false);
+
+      if (shouldPlay) {
+        musicAudio.play().then(() => setMusicPlaying(true)).catch(() => {
+          setMusicPlaying(false);
+          if (musicReason) musicReason.textContent = "浏览器暂时拦截了播放，点一下播放按钮就好。";
+        });
+      }
+    }
+
+    function toggleMusic() {
+      if (!musicAudio || !playlist.length) return;
+      if (!musicAudio.src) loadSong(activeSongIndex);
+      if (musicAudio.paused) {
+        musicAudio.play().then(() => setMusicPlaying(true)).catch(() => setMusicPlaying(false));
+      } else {
+        musicAudio.pause();
+        setMusicPlaying(false);
+      }
+    }
+
+    function initMusicPlayer() {
+      if (!musicAudio) return;
+      renderPlaylist();
+      if (playlist.length) loadSong(0);
+      musicAudio.volume = Number(musicVolume?.value || 0.72);
+
+      playlistList?.addEventListener("click", event => {
+        const button = event.target.closest("[data-song-index]");
+        if (!button) return;
+        loadSong(Number(button.dataset.songIndex), true);
+      });
+
+      musicPlay?.addEventListener("click", toggleMusic);
+      musicPrev?.addEventListener("click", () => loadSong(activeSongIndex - 1, true));
+      musicNext?.addEventListener("click", () => loadSong(activeSongIndex + 1, true));
+      musicVolume?.addEventListener("input", () => {
+        musicAudio.volume = Number(musicVolume.value);
+      });
+      musicSeek?.addEventListener("input", () => {
+        isSeekingMusic = true;
+      });
+      musicSeek?.addEventListener("change", () => {
+        if (Number.isFinite(musicAudio.duration)) {
+          musicAudio.currentTime = Number(musicSeek.value) / 100 * musicAudio.duration;
+        }
+        isSeekingMusic = false;
+      });
+      musicAudio.addEventListener("loadedmetadata", () => {
+        if (musicDuration) musicDuration.textContent = formatMusicTime(musicAudio.duration);
+      });
+      musicAudio.addEventListener("timeupdate", () => {
+        if (musicCurrent) musicCurrent.textContent = formatMusicTime(musicAudio.currentTime);
+        if (musicSeek && Number.isFinite(musicAudio.duration) && !isSeekingMusic) {
+          musicSeek.value = Math.round(musicAudio.currentTime / musicAudio.duration * 100) || 0;
+        }
+      });
+      musicAudio.addEventListener("play", () => setMusicPlaying(true));
+      musicAudio.addEventListener("pause", () => setMusicPlaying(false));
+      musicAudio.addEventListener("ended", () => loadSong(activeSongIndex + 1, true));
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function formatCanvasTime(value) {
+      if (!value) return "未设置截止时间";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "时间待确认";
+      return date.toLocaleString("zh-CN", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    }
+
+    function canvasUrgencyLabel(urgency) {
+      return {
+        overdue: "已逾期",
+        today: "24h内",
+        soon: "三天内",
+        done: "已完成",
+        normal: "待办"
+      }[urgency] || "待办";
+    }
+
+    function renderCanvasPanel(data) {
+      const target = document.querySelector("#canvasPanel");
+      if (!target) return;
+
+      if (!data) {
+        target.innerHTML = `
+          <div class="group-title">
+            <h3>Canvas 待办与通知</h3>
+            <span>正在连接本地后端</span>
+          </div>
+          <div class="canvas-empty">正在读取 Canvas Planner、作业和未读消息。</div>
+        `;
+        return;
+      }
+
+      if (data.error) {
+        const homeCanvasTotal = document.querySelector("#studyTotal");
+        if (homeCanvasTotal) homeCanvasTotal.textContent = "未连接";
+        target.innerHTML = `
+          <div class="group-title">
+            <h3>Canvas 待办与通知</h3>
+            <span>未连接</span>
+          </div>
+          <div class="canvas-empty">
+            ${escapeHTML(data.message || "请启动 server 后端，并在 server/.env 中配置 CANVAS_BASE_URL 与 CANVAS_TOKEN。")}
+          </div>
+        `;
+        return;
+      }
+
+      const counts = data.counts || {};
+      const tasks = Array.isArray(data.items) ? data.items : [];
+      const notices = Array.isArray(data.conversations) ? data.conversations : [];
+      const fetched = data.fetchedAt ? new Date(data.fetchedAt).toLocaleTimeString("zh-CN", { hour12: false }) : "刚刚";
+      const staleText = data.stale ? "缓存降级" : (data.cached ? "缓存" : "实时");
+      const homeCanvasTotal = document.querySelector("#studyTotal");
+      if (homeCanvasTotal) homeCanvasTotal.textContent = `${counts.totalTodo ?? 0}项`;
+
+      const taskMarkup = tasks.length ? tasks.map(item => {
+        const taskUrl = item.url || data.baseUrl || "https://oc.sjtu.edu.cn";
+        return `
+          <a class="canvas-task" href="${escapeHTML(taskUrl)}" target="_blank" rel="noreferrer">
+            <div class="canvas-task-top">
+              <strong>${escapeHTML(item.title)}</strong>
+              <em class="canvas-pill ${escapeHTML(item.urgency)}">${canvasUrgencyLabel(item.urgency)}</em>
+            </div>
+            <span>${escapeHTML(item.course)} · ${formatCanvasTime(item.dueAt)}</span>
+          </a>
+        `;
+      }).join("") : `<div class="canvas-empty">当前时间窗内没有未完成 Canvas 待办。</div>`;
+
+      const noticeMarkup = notices.length ? notices.map(item => `
+        <div class="canvas-notice">
+          <div class="canvas-notice-top">
+            <strong>${escapeHTML(item.subject)}</strong>
+            <em class="canvas-pill">${escapeHTML(item.unreadCount || 1)} 条</em>
+          </div>
+          <span>${escapeHTML(item.course)} · ${formatCanvasTime(item.lastAuthoredAt)}</span>
+        </div>
+      `).join("") : `<div class="canvas-empty">暂无未读 Canvas 消息。</div>`;
+
+      target.innerHTML = `
+        <div class="group-title">
+          <h3>Canvas 待办与通知</h3>
+          <span>${staleText} · ${fetched}</span>
+        </div>
+        <div class="canvas-summary">
+          <div class="canvas-stat"><small>待办总数</small><strong>${counts.totalTodo ?? 0}</strong></div>
+          <div class="canvas-stat"><small>即将截止</small><strong>${counts.dueSoon ?? 0}</strong></div>
+          <div class="canvas-stat"><small>已逾期</small><strong>${counts.overdue ?? 0}</strong></div>
+          <div class="canvas-stat"><small>未读消息</small><strong>${counts.unread ?? 0}</strong></div>
+        </div>
+        <div class="canvas-layout">
+          <div>
+            <div class="canvas-subhead"><b>近期任务</b><span>${escapeHTML(data.window?.futureDays ?? 21)} 天内</span></div>
+            <div class="canvas-list">${taskMarkup}</div>
+          </div>
+          <div>
+            <div class="canvas-subhead"><b>通知</b><span>Conversations</span></div>
+            <div class="canvas-notices">${noticeMarkup}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchCanvasSummary() {
+      try {
+        const resp = await fetch("http://localhost:3000/api/canvas/summary", { signal: AbortSignal.timeout(10000) });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          renderCanvasPanel({ error: data.error || "fetch_failed", message: data.message || "Canvas 后端返回异常。" });
+          return;
+        }
+        renderCanvasPanel(data);
+      } catch {
+        renderCanvasPanel({
+          error: "offline",
+          message: "本地后端未启动。进入 server 目录运行 npm start，并在 server/.env 中配置 Canvas Token。"
+        });
+      }
+    }
+
+    function renderDashboard() {
+      dashboardGrid.innerHTML = `
+        <article class="canvas-panel" id="canvasPanel" aria-live="polite">
+          <div class="group-title">
+            <h3>Canvas 待办与通知</h3>
+            <span>Local API</span>
+          </div>
+          <div class="canvas-empty">等待本地后端返回 Canvas Planner 和未读消息。</div>
+        </article>
+      `;
+    }
+
+    function renderPhotoAndFood() {
+      const activeSet = profile.photoCollections.find(item => item.id === activeCollection) || profile.photoCollections[0];
+
+      photoShelf.innerHTML = profile.photoCollections.map(item => `
+        <button class="photo-album ${item.id === activeSet.id ? "active" : ""}" type="button" data-collection="${item.id}">
+          <div class="photo-album-cover">
+            <img src="${item.shots[0].src}" alt="${item.name}">
+          </div>
+          <div class="photo-album-meta">
+            <strong>${item.name}</strong>
+            <span>${item.shots.length} 张作品</span>
+          </div>
+        </button>
+      `).join("");
+
+      if (activeShotIndex < 0 || activeShotIndex >= activeSet.shots.length) {
+        photoStage.classList.add("empty");
+        photoStage.innerHTML = `
+          <div class="photo-empty-copy">
+            <h3>我的摄影集 ↓</h3>
+            <p>${activeSet.intro}</p>
+          </div>
+        `;
+      } else {
+        const shot = activeSet.shots[activeShotIndex];
+        photoStage.classList.remove("empty");
+        photoStage.innerHTML = `
+          <button class="photo-hit prev" type="button" data-dir="-1" data-hint="左侧单击 · 上一张" aria-label="上一张"></button>
+          <button class="photo-hit next" type="button" data-dir="1" data-hint="右侧单击 · 下一张" aria-label="下一张"></button>
+          <figure class="photo-stage-figure" id="photoStageFigure">
+            <img class="photo-stage-image" src="${shot.src}" alt="${shot.title}">
+            <img class="photo-stage-main" src="${shot.src}" alt="${shot.title}">
+            <figcaption class="photo-stage-overlay">
+              <strong>${shot.title}</strong>
+              <span>${activeSet.name} · 第 ${activeShotIndex + 1} / ${activeSet.shots.length} 张 · ${shot.note}</span>
+            </figcaption>
+          </figure>
+        `;
+        window.clearTimeout(window.stageShowTimer);
+        window.stageShowTimer = window.setTimeout(() => {
+          document.querySelector("#photoStageFigure")?.classList.add("show");
+        }, 20);
+      }
+
+      photoShelf.querySelectorAll(".photo-album").forEach(album => {
+        album.addEventListener("click", () => {
+          const nextId = album.dataset.collection;
+          if (nextId === activeCollection) {
+            activeShotIndex = activeShotIndex === -1 ? 0 : -1;
+          } else {
+            activeCollection = nextId;
+            activeShotIndex = 0;
+          }
+          renderPhotoAndFood();
+          const set = profile.photoCollections.find(item => item.id === activeCollection);
+          showToast(activeShotIndex === -1 ? `已收起：${set?.name || "摄影集"}` : `已打开摄影集：${set?.name || "摄影集"}`);
+        });
+      });
+
+      photoStage.querySelectorAll(".photo-hit").forEach(button => {
+        button.addEventListener("click", () => {
+          const direction = Number(button.dataset.dir);
+          const nextIndex = activeShotIndex + direction;
+          if (nextIndex < 0) {
+            showToast("已经是第一张了。");
+            return;
+          }
+          if (nextIndex >= activeSet.shots.length) {
+            showToast("已经是最后一张了。");
+            return;
+          }
+          activeShotIndex = nextIndex;
+          renderPhotoAndFood();
+        });
+      });
+
+      renderFoodReviews();
+    }
+
+    const foodTiers = [
+      { name: "夯爆了", bg: "linear-gradient(135deg, #ff9f7a, #ffd36d)" },
+      { name: "夯", bg: "linear-gradient(135deg, #ffd36d, #92e6b5)" },
+      { name: "人上人", bg: "linear-gradient(135deg, #92e6b5, #7fc8ff)" },
+      { name: "npc", bg: "linear-gradient(135deg, #d9e2d0, #b8c2b5)" },
+      { name: "拉", bg: "linear-gradient(135deg, #c9b8aa, #8e8a82)" }
+    ];
+
+    function getFoodReviews() {
+      return Array.isArray(window.foodReviews) ? window.foodReviews : [];
+    }
+
+    function renderFoodReviews() {
+      const reviews = getFoodReviews().filter(item => (item.area || "交大附近") === "交大附近");
+      if (!foodTable) return;
+
+      foodTable.innerHTML = `
+        <div class="food-area-tabs" aria-label="美食区域筛选">
+          <button class="active" type="button">交大附近</button>
+          <button type="button" disabled>其他区域敬请期待</button>
+        </div>
+        <div class="food-tier-board">
+          ${foodTiers.map(tier => {
+            const tierItems = reviews.filter(item => item.tier === tier.name);
+            return `
+              <section class="food-tier-row" style="--tier-bg:${tier.bg}">
+                <div class="food-tier-label">${tier.name}</div>
+                <div class="food-tier-items">
+                  ${tierItems.length ? tierItems.map(item => `
+                    <button class="food-review-card" type="button" data-food-id="${item.id}" aria-label="查看${item.shop}测评">
+                      <img src="${item.image}" alt="${item.shop}">
+                      <span>${item.shop}</span>
+                    </button>
+                  `).join("") : `<div class="canvas-empty">这里还没排上号。</div>`}
+                </div>
+              </section>
+            `;
+          }).join("")}
+        </div>
+      `;
+
+      foodTable.querySelectorAll("[data-food-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          const item = getFoodReviews().find(review => review.id === button.dataset.foodId);
+          if (item) openFoodReviewModal(item);
+        });
+      });
+    }
+
+    function openFoodReviewModal(item) {
+      if (!foodModal) return;
+      foodModalImage.src = item.image;
+      foodModalImage.alt = item.shop;
+      foodModalMeta.innerHTML = `
+        <span>${item.tier}</span>
+        <span>${item.area || "交大附近"}</span>
+        <span>${item.price || "价格待填"}</span>
+        <span>${item.dish || "菜品待填"}</span>
+      `;
+      foodModalTitle.textContent = item.shop || "待填写店名";
+      foodModalLocation.textContent = `地点：${item.location || "待填写地点"}`;
+      foodModalReview.textContent = `评价：${item.review || "待填写评价"}`;
+      foodModal.classList.add("show");
+      foodModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeFoodReviewModal() {
+      if (!foodModal) return;
+      foodModal.classList.remove("show");
+      foodModal.setAttribute("aria-hidden", "true");
+    }
+
+    function getActiveFoodCity() {
+      return profile.foodMap.find(item => item.id === activeFoodCity) || null;
+    }
+
+    function getActiveFoodArea() {
+      const city = getActiveFoodCity() || profile.foodMap[0];
+      return city.areas.find(item => item.id === activeFoodArea) || city.areas[0];
+    }
+
+    function renderChinaMapSvg() {
+      return "<svg class=\"china-map\" viewBox=\"0 140 520 240\" aria-hidden=\"true\"><path class=\"map-land\" d=\"M 199.8 235.1 L 213.5 253.6 L 223.3 257.5 L 227.4 263.1 L 235.0 268.7 L 244.4 265.1 L 259.2 267.3 L 259.9 280.5 L 272.8 276.8 L 273.6 269.4 L 279.5 264.0 L 279.9 271.7 L 286.4 276.1 L 293.9 278.7 L 299.6 276.0 L 302.7 269.7 L 308.6 265.4 L 314.4 264.6 L 319.6 263.7 L 325.3 260.2 L 333.9 255.6 L 342.6 252.8 L 342.0 248.0 L 344.1 244.4 L 349.1 240.7 L 353.0 245.0 L 359.1 243.6 L 364.4 242.4 L 367.2 238.2 L 372.5 236.7 L 376.9 241.5 L 377.0 244.1 L 383.1 247.4 L 387.3 245.1 L 386.7 239.8 L 392.0 241.6 L 395.0 242.7 L 400.7 239.5 L 407.2 238.1 L 413.1 236.1 L 418.0 235.3 L 424.1 231.1 L 422.7 228.0 L 419.3 221.8 L 411.7 220.9 L 410.8 215.9 L 408.1 210.7 L 410.5 208.8 L 416.4 210.0 L 418.9 202.7 L 422.3 200.9 L 418.2 201.8 L 413.5 196.9 L 427.8 187.2 L 431.1 189.9 L 432.1 184.3 L 437.0 180.5 L 437.0 177.0 L 437.8 173.8 L 439.7 170.6 L 441.8 167.9 L 443.5 164.7 L 438.3 160.8 L 433.3 162.4 L 427.3 163.0 L 419.3 163.2 L 416.3 159.1 L 414.7 155.0 L 410.0 154.1 L 403.7 152.3 L 407.8 148.0 L 401.8 146.3 L 395.3 149.9 L 398.7 152.6 L 398.7 156.9 L 393.1 160.8 L 390.9 164.7 L 386.8 169.1 L 387.1 172.3 L 380.4 175.1 L 372.9 177.8 L 359.9 192.7 L 377.9 190.8 L 390.4 197.9 L 389.9 202.7 L 381.6 202.1 L 372.9 203.3 L 362.7 206.8 L 350.4 213.3 L 338.2 218.5 L 321.5 220.1 L 321.8 229.0 L 307.5 236.5 L 287.1 238.0 L 262.0 242.9 L 231.0 236.2 L 199.8 235.1 Z\"/></svg>";
+    }
+
+    function renderRegionMapSvg(regionId) {
+      var maps = {
+        beijing: "<svg class=\"local-map\" viewBox=\"0 55 520 410\" aria-hidden=\"true\"><path class=\"map-land\" d=\"M 216.1 224.6 L 219.3 225.7 L 224.7 225.7 L 232.5 229.7 L 231.9 231.5 L 234.7 232.8 L 234.8 235.3 L 235.2 239.7 L 239.9 237.8 L 245.9 238.9 L 249.8 239.8 L 253.3 239.3 L 257.5 243.5 L 255.7 247.5 L 257.6 251.4 L 261.8 252.6 L 264.8 255.7 L 270.3 257.3 L 275.3 257.3 L 278.0 253.3 L 281.8 254.2 L 286.4 254.3 L 290.1 256.1 L 293.7 256.3 L 294.8 259.8 L 299.8 259.5 L 303.1 258.0 L 306.0 257.6 L 312.2 260.9 L 312.9 263.0 L 316.5 262.4 L 320.0 259.7 L 328.5 251.5 L 333.1 247.0 L 336.1 243.1 L 333.5 239.1 L 329.9 237.8 L 324.6 237.8 L 326.1 233.7 L 323.4 232.2 L 320.5 229.1 L 321.8 225.8 L 323.5 222.0 L 326.1 220.1 L 327.0 217.4 L 324.8 213.8 L 325.3 211.8 L 324.8 207.9 L 320.4 207.5 L 317.2 203.5 L 317.4 201.2 L 318.6 196.4 L 321.9 192.0 L 320.6 189.4 L 316.5 185.1 L 310.3 184.4 L 313.8 182.0 L 321.3 181.1 L 322.5 177.4 L 321.0 173.7 L 320.9 170.8 L 318.4 167.9 L 320.2 165.7 L 321.9 162.1 L 321.3 156.8 L 322.6 152.4 L 327.8 149.5 L 331.1 147.3 L 334.6 145.8 L 340.7 146.3 L 341.5 140.2 L 339.1 134.5 L 344.7 135.9 L 350.5 135.1 L 352.6 129.8 L 358.1 127.5 L 359.6 124.2 L 363.6 123.0 L 364.5 118.8 L 361.5 117.0 L 357.8 113.5 L 353.9 112.6 L 350.9 112.1 L 347.3 110.2 L 344.5 109.5 L 338.1 102.7 L 334.4 102.1 L 331.5 99.4 L 325.4 97.0 L 322.2 94.7 L 322.4 89.9 L 319.6 88.2 L 316.2 84.5 L 313.3 78.3 L 314.5 75.7 L 316.6 69.0 L 317.8 65.9 L 316.9 62.0 L 313.1 61.6 L 308.1 59.4 L 304.1 57.7 L 299.9 58.6 L 297.2 62.0 L 299.1 65.0 L 298.6 68.7 L 297.5 76.4 L 287.5 75.7 L 283.5 75.1 L 277.7 75.1 L 273.7 76.9 L 268.0 77.7 L 263.5 77.5 L 257.6 77.2 L 255.6 83.8 L 259.3 88.5 L 260.9 91.0 L 262.3 98.3 L 256.4 97.0 L 251.5 96.5 L 244.9 95.9 L 241.9 94.0 L 238.6 89.0 L 234.9 86.5 L 228.7 89.9 L 227.6 94.7 L 229.9 98.6 L 235.2 102.3 L 239.1 106.5 L 243.5 109.7 L 247.5 115.0 L 253.7 118.6 L 256.8 122.9 L 258.9 126.8 L 261.6 129.6 L 266.6 131.6 L 269.5 133.2 L 272.2 137.0 L 270.5 142.4 L 270.3 144.7 L 269.4 148.1 L 264.6 152.6 L 269.2 154.6 L 273.1 156.0 L 275.5 157.8 L 279.8 159.0 L 281.6 161.7 L 287.3 163.4 L 284.1 165.3 L 278.6 166.0 L 277.0 170.8 L 276.7 174.6 L 272.1 179.3 L 268.8 182.3 L 263.7 187.1 L 259.0 191.4 L 262.8 194.0 L 268.2 193.0 L 271.8 197.2 L 271.7 200.8 L 265.6 202.1 L 260.1 200.8 L 254.5 202.1 L 247.9 201.8 L 242.1 204.4 L 237.9 201.1 L 236.1 197.4 L 230.9 197.7 L 226.3 197.3 L 221.2 199.6 L 216.6 201.2 L 220.4 206.0 L 217.3 210.0 L 217.3 215.2 L 216.0 218.0 L 215.6 221.4 L 216.1 224.6 Z\"/></svg>",
+        shanghai: "<svg class=\"local-map\" viewBox=\"0 70 520 380\" aria-hidden=\"true\"><path class=\"map-land\" d=\"M 135.2 173.3 L 130.4 173.9 L 129.5 173.3 L 128.1 172.4 L 124.9 171.7 L 121.8 170.4 L 120.0 169.0 L 117.6 169.4 L 113.8 173.3 L 113.2 174.7 L 108.7 168.6 L 106.3 166.4 L 105.0 166.9 L 102.3 173.0 L 102.6 175.6 L 98.4 176.7 L 94.0 177.3 L 93.0 187.1 L 93.3 187.6 L 94.2 189.0 L 93.1 191.0 L 94.6 193.2 L 95.8 194.1 L 94.7 195.8 L 93.7 197.0 L 96.1 207.8 L 95.6 209.5 L 96.9 210.4 L 98.1 211.3 L 97.4 212.2 L 97.9 214.6 L 96.9 216.0 L 99.6 216.0 L 97.7 217.6 L 99.6 220.3 L 98.2 222.1 L 100.5 224.4 L 98.8 225.7 L 99.9 226.2 L 98.9 227.8 L 96.1 230.0 L 95.2 231.6 L 94.4 230.6 L 91.4 229.7 L 88.1 230.7 L 85.9 229.2 L 84.1 231.1 L 85.6 233.0 L 82.8 237.0 L 81.7 235.4 L 78.3 235.0 L 77.4 233.8 L 75.4 235.4 L 73.6 238.2 L 61.2 238.7 L 43.7 236.4 L 27.4 237.3 L 19.3 237.4 L 8.9 239.4 L 6.5 242.9 L 4.2 247.1 L 1.6 249.5 L 0.0 252.5 L 3.3 253.6 L 5.8 255.0 L 7.2 254.3 L 9.0 253.8 L 10.1 254.5 L 14.0 256.5 L 15.7 255.1 L 16.1 256.4 L 18.2 259.9 L 20.6 260.3 L 21.8 262.7 L 19.5 263.6 L 17.8 270.6 L 17.2 274.8 L 18.4 277.4 L 19.6 281.3 L 20.3 287.7 L 20.3 291.4 L 24.2 293.6 L 27.9 293.5 L 32.0 293.8 L 35.1 294.8 L 37.9 294.8 L 36.2 291.5 L 43.0 288.4 L 42.0 285.7 L 43.4 285.5 L 47.2 289.5 L 49.2 290.3 L 51.6 292.0 L 57.9 292.7 L 60.7 294.5 L 61.1 295.9 L 61.6 300.6 L 60.9 301.8 L 62.8 303.0 L 64.9 308.4 L 66.3 309.5 L 65.5 311.2 L 62.1 312.0 L 62.4 315.7 L 62.8 318.1 L 61.8 319.8 L 63.1 321.9 L 66.2 321.6 L 68.7 323.2 L 72.2 322.9 L 70.3 323.4 L 71.5 324.8 L 73.3 327.0 L 74.1 326.1 L 77.9 324.0 L 81.0 320.7 L 83.6 319.1 L 84.6 317.3 L 84.9 313.2 L 86.8 313.4 L 89.5 315.5 L 91.1 316.7 L 92.7 319.1 L 98.2 319.8 L 100.1 318.6 L 101.0 317.5 L 102.2 316.5 L 105.3 315.6 L 109.6 315.0 L 108.7 311.1 L 110.6 308.0 L 110.8 301.6 L 112.7 295.7 L 107.6 290.1 L 106.0 286.6 L 109.1 287.3 L 110.7 285.1 L 109.7 281.6 L 107.6 280.8 L 106.3 277.4 L 104.9 275.2 L 102.8 274.6 L 103.7 272.6 L 104.4 270.7 L 107.5 269.9 L 107.6 272.7 L 110.0 273.5 L 111.6 273.2 L 114.7 273.5 L 119.0 272.7 L 122.6 273.2 L 122.8 272.1 L 120.9 268.7 L 119.1 264.7 L 116.5 264.0 L 112.1 262.8 L 110.5 260.2 L 109.7 256.7 L 110.7 255.3 L 111.0 254.5 L 112.4 252.6 L 116.5 248.3 L 118.1 248.8 L 120.3 250.2 L 123.4 252.3 L 125.3 252.8 L 127.1 254.7 L 129.8 255.2 L 131.7 256.5 L 134.1 257.6 L 135.1 258.3 L 136.0 256.9 L 136.6 254.3 L 135.5 252.9 L 140.6 253.1 L 141.2 251.8 L 142.9 250.2 L 144.7 249.9 L 145.0 246.8 L 145.6 245.1 L 148.9 245.3 L 148.0 242.7 L 147.4 241.3 L 148.0 239.3 L 153.9 236.4 L 157.1 235.1 L 159.1 236.3 L 165.7 236.3 L 168.5 238.2 L 166.2 244.7 L 167.3 246.9 L 172.6 245.1 L 174.5 241.8 L 177.0 240.4 L 177.0 239.8 L 180.8 238.9 L 182.7 241.4 L 183.9 239.1 L 186.2 237.9 L 193.2 238.6 L 194.7 234.4 L 192.4 233.0 L 191.1 232.9 L 191.7 230.0 L 194.5 230.6 L 195.2 229.4 L 199.8 229.2 L 209.2 226.4 L 211.4 227.1 L 212.7 225.1 L 210.1 220.2 L 206.8 215.4 L 202.1 209.6 L 199.5 206.8 L 198.3 207.9 L 194.6 210.8 L 189.0 209.0 L 185.8 206.7 L 185.8 205.2 L 183.4 202.4 L 183.5 200.0 L 182.8 197.9 L 182.7 196.0 L 181.0 193.1 L 179.6 190.8 L 178.1 189.6 L 174.5 189.5 L 177.2 186.0 L 181.0 181.5 L 177.5 181.0 L 173.5 180.0 L 169.6 179.7 L 167.0 180.7 L 165.5 182.1 L 162.8 183.5 L 160.8 180.5 L 160.2 182.0 L 157.6 182.2 L 156.2 183.1 L 154.6 184.9 L 153.1 183.8 L 150.1 184.4 L 147.9 183.4 L 146.7 182.8 L 144.6 182.3 L 142.2 182.6 L 141.8 181.1 L 139.3 176.7 L 137.1 176.1 L 134.4 177.4 L 135.2 173.3 Z\"/></svg>",
+        shanxi: "<svg class=\"local-map\" viewBox=\"55 0 410 520\" aria-hidden=\"true\"><path class=\"map-land\" d=\"M 207.7 109.1 L 202.7 109.7 L 193.9 111.3 L 186.1 108.2 L 177.2 107.0 L 172.5 106.0 L 166.0 104.1 L 159.8 106.1 L 162.2 107.9 L 160.3 108.3 L 159.9 110.1 L 158.3 115.9 L 158.7 119.7 L 152.6 123.2 L 151.5 127.1 L 145.3 128.1 L 136.5 127.7 L 131.3 128.8 L 129.4 133.0 L 132.3 135.7 L 135.0 134.5 L 134.6 136.9 L 138.0 139.4 L 139.3 141.0 L 138.5 144.8 L 134.1 155.5 L 131.5 158.9 L 126.3 165.8 L 117.0 168.9 L 118.1 175.3 L 118.3 180.6 L 118.1 184.1 L 115.1 189.4 L 113.7 192.5 L 112.7 197.0 L 115.8 199.5 L 119.6 201.9 L 129.2 197.3 L 136.8 195.1 L 139.3 201.1 L 141.5 204.2 L 150.9 207.3 L 153.5 210.3 L 160.6 211.2 L 162.8 216.4 L 166.4 215.6 L 170.9 216.7 L 176.5 213.3 L 185.9 207.8 L 190.2 209.4 L 187.8 216.0 L 194.4 222.2 L 193.4 225.1 L 194.0 228.3 L 197.2 233.3 L 199.2 236.5 L 193.0 242.0 L 196.8 245.2 L 199.7 243.7 L 202.2 247.3 L 206.3 248.5 L 215.7 248.2 L 224.4 249.8 L 230.2 251.5 L 235.2 252.1 L 239.0 251.5 L 239.0 244.7 L 237.3 240.6 L 238.7 237.7 L 244.3 236.2 L 247.7 236.6 L 254.1 240.1 L 258.1 239.2 L 263.2 243.0 L 265.7 240.0 L 268.8 244.4 L 275.0 246.0 L 276.9 242.1 L 282.1 242.6 L 292.1 241.7 L 297.4 236.3 L 306.6 233.6 L 309.8 232.8 L 315.0 230.3 L 318.7 228.3 L 320.3 225.6 L 326.1 226.0 L 332.3 225.2 L 340.6 220.5 L 347.8 217.8 L 354.3 215.4 L 359.2 216.6 L 366.1 215.4 L 370.7 208.9 L 371.6 203.2 L 376.9 203.1 L 381.5 201.5 L 383.0 196.8 L 387.5 197.0 L 390.2 191.8 L 393.4 188.6 L 395.3 185.4 L 390.0 182.8 L 387.5 176.6 L 387.6 170.0 L 392.9 167.6 L 399.4 162.1 L 403.8 160.2 L 404.7 156.3 L 405.3 147.0 L 404.2 139.9 L 399.4 135.1 L 393.8 132.6 L 387.2 130.6 L 384.0 127.7 L 375.2 126.4 L 369.0 125.7 L 366.6 127.1 L 364.0 131.2 L 356.1 135.7 L 353.1 136.3 L 347.3 138.1 L 333.9 139.8 L 328.0 138.8 L 325.2 135.2 L 320.6 133.5 L 315.5 137.4 L 304.3 140.7 L 300.9 145.4 L 295.7 148.6 L 293.2 151.8 L 287.7 150.8 L 285.3 155.1 L 280.0 155.8 L 277.9 160.0 L 271.9 160.1 L 268.9 157.1 L 263.8 155.0 L 257.2 158.5 L 250.1 158.2 L 245.0 157.5 L 243.2 159.1 L 244.2 157.1 L 241.2 156.3 L 238.9 150.9 L 235.9 148.9 L 233.3 146.3 L 232.3 142.7 L 225.1 142.4 L 222.9 144.0 L 219.3 139.8 L 216.5 133.9 L 215.2 131.4 L 214.5 128.5 L 211.7 125.2 L 206.2 123.6 L 205.4 118.3 L 213.3 117.5 L 211.8 113.5 L 207.7 109.1 Z\"/></svg>"
+      };
+      return maps[regionId] || maps.beijing;
+    }
+
+    function renderRegionPreviewSvg(regionId) {
+      return renderRegionMapSvg(regionId).replace("local-map", "local-map preview-map");
+    }
+
+    function renderFoodMap() {
+      const city = getActiveFoodCity();
+      const selected = city ? getActiveFoodArea() : null;
+
+      const areaPins = city ? city.areas.map(area => `
+        <button class="food-pin area ${area.id === activeFoodArea ? "active" : ""}" style="--x:${area.x}%;--y:${area.y}%;" type="button" data-area="${area.id}" aria-label="查看${area.name}${area.shop}">
+          <span class="food-pin-dot"></span>
+          <span class="food-pin-label">${area.name}</span>
+        </button>
+      `).join("") : "";
+
+      const chinaPins = profile.foodMap.map(item => `
+        <button class="food-pin city" style="--x:${item.cx}%;--y:${item.cy}%;" type="button" data-city="${item.id}" aria-label="进入${item.city}地图">
+          <span class="food-pin-dot"></span>
+          <span class="food-pin-label">${item.city}</span>
+        </button>
+      `).join("");
+
+      const detail = selected ? `
+        <aside class="food-detail">
+          <div class="food-detail-image">
+            <img src="${selected.image}" alt="${selected.shop}">
+            <span class="food-score">${selected.score}</span>
+          </div>
+          <div class="food-detail-body">
+            <div class="food-meta">
+              <span>${city.city}</span>
+              <span>${selected.type}</span>
+              <span>${selected.dish}</span>
+            </div>
+            <h3>${selected.shop}</h3>
+            <p>${selected.address}</p>
+            <p class="food-review">${selected.review}</p>
+          </div>
+        </aside>
+      ` : `
+        <aside class="food-detail">
+          <div class="food-detail-image">
+            <img src="assets/photos/那些年扫过的街2.jpg" alt="美食地图入口">
+            <span class="food-score">Map</span>
+          </div>
+          <div class="food-detail-body">
+            <div class="food-meta">
+              <span>山西</span>
+              <span>北京</span>
+              <span>上海</span>
+            </div>
+            <h3>${city ? `${city.city}美食地图` : "从中国地图开始"}</h3>
+            <p>${city ? city.intro : "点击中国地图上的高亮区域，进入对应城市的美食地图。山西看面食，北京看胡同，上海看五角场和闵行。"}</p>
+            <p class="food-review">${city ? "点击地图上的提示点查看店铺详情和评价。" : "北京、上海、山西三地已标亮，点击即可放大进入。"}</p>
+          </div>
+        </aside>
+      `;
+
+      foodTable.innerHTML = `
+        <div class="food-map-stage ${city ? "zoomed" : ""}">
+          <div class="food-map-toolbar">
+            <div class="food-map-kicker">
+              <b>${city ? `${city.city} · ${selected ? selected.name : "地图"}` : "中国美食地图"}</b>
+              <span>${city ? `共${city.areas.length}个探店点` : "点击北京、上海、山西进入区域地图"}</span>
+            </div>
+            ${city ? `<button class="food-back" type="button" id="foodBack">← 返回全国</button>` : ""}
+          </div>
+          <div class="food-map-scene">
+            ${city ? renderRegionMapSvg(city.id) : renderChinaMapSvg()}
+            ${city ? areaPins : chinaPins}
+          </div>
+        </div>
+        ${detail}
+      `;
+
+      foodTable.querySelectorAll("[data-city]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeFoodCity = button.dataset.city;
+          const nextCity = getActiveFoodCity();
+          activeFoodArea = nextCity?.areas[0]?.id || "";
+          renderFoodMap();
+          showToast(`已放大到${nextCity?.city || "城市"}地图。`);
+        });
+      });
+
+      foodTable.querySelectorAll("[data-area]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeFoodArea = button.dataset.area;
+          renderFoodMap();
+          const area = getActiveFoodArea();
+          showToast(`已定位：${area.shop}`);
+        });
+      });
+
+      foodTable.querySelector("#foodBack")?.addEventListener("click", () => {
+        activeFoodCity = "";
+        activeFoodArea = "";
+        renderFoodMap();
+        showToast("已缩小返回全国地图。");
+      });
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString("zh-CN", { hour12: false });
+      const date = now.toLocaleDateString("zh-CN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+      const daySeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      const dayPercent = Math.round(daySeconds / 86400 * 100);
+      const weekDay = now.getDay() === 0 ? 7 : now.getDay();
+      const weekPercent = Math.round(((weekDay - 1) * 86400 + daySeconds) / (7 * 86400) * 100);
+      document.querySelector("#clockTime").textContent = time;
+      document.querySelector("#clockDate").textContent = date;
+      document.querySelector("#dayPercent").textContent = `${dayPercent}%`;
+      document.querySelector("#weekPercent").textContent = `${weekPercent}%`;
+      document.querySelector("#dayFill").style.width = `${dayPercent}%`;
+      document.querySelector("#weekFill").style.width = `${weekPercent}%`;
+    }
+
+    metricButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        metricButtons.forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        activeMetric = button.dataset.metric;
+        renderData();
+      });
+    });
+
+    dayRange.addEventListener("input", renderData);
+
+    function setActiveNav(index) {
+      const id = pages[index].id;
+      navLinks.forEach(link => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+      });
+      document.body.classList.toggle("home-active", id === "home");
+    }
+
+    function goToPage(index, updateHash = true) {
+      const nextIndex = Math.max(0, Math.min(index, pages.length - 1));
+      activePage = nextIndex;
+      pages[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveNav(nextIndex);
+      if (updateHash) {
+        history.replaceState(null, "", `#${pages[nextIndex].id}`);
+      }
+      isPaging = true;
+      window.clearTimeout(window.pageTimer);
+      window.pageTimer = window.setTimeout(() => {
+        isPaging = false;
+      }, 650);
+    }
+
+    function findPageIndexFromHash() {
+      const id = decodeURIComponent(location.hash.replace("#", ""));
+      const index = pages.findIndex(page => page.id === id);
+      return index >= 0 ? index : 0;
+    }
+
+    navLinks.forEach(link => {
+      link.addEventListener("click", event => {
+        const target = link.getAttribute("href");
+        if (!target || !target.startsWith("#")) return;
+        const index = pages.findIndex(page => `#${page.id}` === target);
+        if (index < 0) return;
+        event.preventDefault();
+        goToPage(index);
+      });
+    });
+
+    pager.addEventListener("wheel", event => {
+      const contentArea = event.target.closest(".content");
+      if (contentArea) {
+        const atTop = contentArea.scrollTop <= 0;
+        const atBottom = contentArea.scrollTop + contentArea.clientHeight >= contentArea.scrollHeight - 2;
+        if ((event.deltaY < 0 && !atTop) || (event.deltaY > 0 && !atBottom)) {
+          return;
+        }
+      }
+      event.preventDefault();
+      if (isPaging || Math.abs(event.deltaY) < 12) return;
+      goToPage(activePage + (event.deltaY > 0 ? 1 : -1));
+    }, { passive: false });
+
+    pager.addEventListener("click", event => {
+      const interactive = event.target.closest("button, a, input, .service-card, .food-modal-card, .music-player, .game-card");
+      if (interactive) return;
+      goToPage(activePage + 1);
+    });
+
+    document.querySelector("#nextPageButton").addEventListener("click", () => {
+      goToPage(activePage + 1);
+    });
+
+    document.querySelector("#foodModalClose")?.addEventListener("click", closeFoodReviewModal);
+    foodModal?.addEventListener("click", event => {
+      if (event.target === foodModal) closeFoodReviewModal();
+    });
+
+    const finishPageIndex = pages.findIndex(page => page.id === "finish");
+    const gameStage = document.querySelector("#gameStage");
+    const gameDeck = document.querySelector("#gameDeck");
+    const gameZones = document.querySelector("#gameZones");
+    const gameScore = document.querySelector("#gameScore");
+    const gameTime = document.querySelector("#gameTime");
+    const gameCombo = document.querySelector("#gameLives");
+    const gameNote = document.querySelector("#gameNote");
+    const gameStart = document.querySelector("#gameStart");
+    const gameReset = document.querySelector("#gameReset");
+    const gameShuffle = document.querySelector("#gameLeft");
+    const gameHint = document.querySelector("#gameRight");
+    const gameCategories = [
+      { id: "photo", name: "摄影", hint: "光影、街道、构图和按快门的瞬间" },
+      { id: "food", name: "美食", hint: "探店、口味、热气和一顿饭的判断" },
+      { id: "music", name: "音乐", hint: "歌单、旋律、播放器和耳机里的情绪" },
+      { id: "ddl", name: "DDL", hint: "作业、通知、截止时间和 Canvas 待办" }
+    ];
+    const gamePool = [
+      { text: "夜色里一盏路灯把树影切开", detail: "像是相机最想偷走的几秒钟", kind: "photo" },
+      { text: "焦糖、辣油、热汤和一口满足", detail: "先别说话，先给这家店排个等级", kind: "food" },
+      { text: "循环到第三遍才突然听懂副歌", detail: "这首歌应该塞进主页播放器", kind: "music" },
+      { text: "23:59 前提交，系统还要转两圈", detail: "看到这个就该打开工作台", kind: "ddl" },
+      { text: "街角玻璃反射出两层天空", detail: "适合放进摄影观察的作品面板", kind: "photo" },
+      { text: "这家店的锅气比文案更有说服力", detail: "美食测评区请求出战", kind: "food" },
+      { text: "耳机里忽然切到一首老歌", detail: "适合给今天加一点背景声", kind: "music" },
+      { text: "老师发了一条新通知", detail: "装作没看到通常没有好结局", kind: "ddl" },
+      { text: "构图歪了一点，但情绪正好", detail: "有时候照片赢在气口", kind: "photo" },
+      { text: "离交大最近的快乐可能是一顿好饭", detail: "认真吃饭也是个人数据", kind: "food" },
+      { text: "前奏响起，代码都想多跑两行", detail: "音乐页可以收留它", kind: "music" },
+      { text: "待办数量突然多了一个红点", detail: "别慌，先分类再处理", kind: "ddl" }
+    ];
+    const miniGameState = {
+      running: false,
+      score: 0,
+      time: 45,
+      combo: 0,
+      solved: 0,
+      selectedId: "",
+      cards: [],
+      timerId: 0
+    };
+
+    function renderMiniGameHud() {
+      if (!gameScore || !gameTime || !gameCombo) return;
+      gameScore.textContent = miniGameState.score;
+      gameTime.textContent = Math.max(0, Math.ceil(miniGameState.time));
+      gameCombo.textContent = miniGameState.combo;
+    }
+
+    function setMiniGameNote(text) {
+      if (gameNote) gameNote.textContent = text;
+    }
+
+    function pickMiniGameCards() {
+      return [...gamePool]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 8)
+        .map((card, index) => ({ ...card, id: `task-${Date.now()}-${index}` }));
+    }
+
+    function renderMiniGameBoard() {
+      if (!gameDeck || !gameZones) return;
+      gameDeck.innerHTML = miniGameState.cards.length ? miniGameState.cards.map(card => `
+        <div class="game-task ${card.id === miniGameState.selectedId ? "selected" : ""}" draggable="${miniGameState.running}" data-id="${card.id}">
+          <strong>${escapeHTML(card.text)}</strong>
+          <span>${escapeHTML(card.detail)}</span>
+        </div>
+      `).join("") : `<div class="game-task"><strong>这一组清空了</strong><span>点“换一组”继续刷分。</span></div>`;
+
+      gameZones.innerHTML = gameCategories.map(category => `
+        <button class="game-zone" type="button" data-kind="${category.id}">
+          <strong>${category.name}</strong>
+          <span>${category.hint}</span>
+          <b>${miniGameState.cards.filter(card => card.kind === category.id).length}</b>
+        </button>
+      `).join("");
+
+      gameDeck.querySelectorAll(".game-task[data-id]").forEach(task => {
+        task.addEventListener("click", () => selectMiniGameCard(task.dataset.id));
+        task.addEventListener("dragstart", event => {
+          if (!miniGameState.running) {
+            event.preventDefault();
+            return;
+          }
+          miniGameState.selectedId = task.dataset.id;
+          event.dataTransfer.setData("text/plain", task.dataset.id);
+          renderMiniGameBoard();
+        });
+      });
+
+      gameZones.querySelectorAll(".game-zone").forEach(zone => {
+        zone.addEventListener("click", () => answerMiniGame(zone.dataset.kind));
+        zone.addEventListener("dragover", event => {
+          event.preventDefault();
+          zone.classList.add("drag-over");
+        });
+        zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+        zone.addEventListener("drop", event => {
+          event.preventDefault();
+          zone.classList.remove("drag-over");
+          miniGameState.selectedId = event.dataTransfer.getData("text/plain") || miniGameState.selectedId;
+          answerMiniGame(zone.dataset.kind);
+        });
+      });
+    }
+
+    function selectMiniGameCard(id) {
+      if (!miniGameState.running) {
+        setMiniGameNote("先点“开始一局”，调度局才开门。");
+        return;
+      }
+      miniGameState.selectedId = miniGameState.selectedId === id ? "" : id;
+      renderMiniGameBoard();
+    }
+
+    function shuffleMiniGameCards() {
+      if (!miniGameState.running) {
+        setMiniGameNote("先开始一局，再换题。");
+        return;
+      }
+      miniGameState.cards = pickMiniGameCards();
+      miniGameState.selectedId = "";
+      renderMiniGameBoard();
+      setMiniGameNote("新一组来了，别犹豫。");
+    }
+
+    function showMiniGameHint() {
+      if (!miniGameState.running || !miniGameState.cards.length) {
+        setMiniGameNote("开局后我再偷偷给你一点提示。");
+        return;
+      }
+      const card = miniGameState.cards.find(item => item.id === miniGameState.selectedId) || miniGameState.cards[0];
+      const category = gameCategories.find(item => item.id === card.kind);
+      miniGameState.score = Math.max(0, miniGameState.score - 3);
+      renderMiniGameHud();
+      setMiniGameNote(`提示："${card.text}" 更像是 ${category?.name || "某个分类"}。代价 3 分，知识很贵。`);
+    }
+
+    function endMiniGame(message) {
+      miniGameState.running = false;
+      window.clearInterval(miniGameState.timerId);
+      setMiniGameNote(message);
+      renderMiniGameHud();
+      renderMiniGameBoard();
+    }
+
+    function tickMiniGame() {
+      if (!miniGameState.running) return;
+      miniGameState.time -= 1;
+      if (miniGameState.time <= 0) {
+        miniGameState.time = 0;
+        endMiniGame(`时间到，拿下 ${miniGameState.score} 分，连续调度最高 ${miniGameState.combo} 次。`);
+        return;
+      }
+      renderMiniGameHud();
+    }
+
+    function answerMiniGame(kind) {
+      if (!miniGameState.running) {
+        setMiniGameNote("先点“开始一局”，不然这些卡片只是在摸鱼。");
+        return;
+      }
+      const card = miniGameState.cards.find(item => item.id === miniGameState.selectedId);
+      if (!card) {
+        setMiniGameNote("先选一张卡片，再把它送去对应区域。");
+        return;
+      }
+      if (card.kind === kind) {
+        miniGameState.combo += 1;
+        miniGameState.solved += 1;
+        miniGameState.score += 12 + Math.min(18, miniGameState.combo * 2);
+        miniGameState.cards = miniGameState.cards.filter(item => item.id !== card.id);
+        miniGameState.selectedId = "";
+        setMiniGameNote(miniGameState.combo >= 4 ? `连对 ${miniGameState.combo} 个，手速和脑速都在线。` : "分类正确，继续。");
+        if (!miniGameState.cards.length) miniGameState.cards = pickMiniGameCards();
+      } else {
+        miniGameState.combo = 0;
+        miniGameState.score = Math.max(0, miniGameState.score - 6);
+        setMiniGameNote("这个放错了，扣 6 分。别急，先看关键词。");
+      }
+      renderMiniGameHud();
+      renderMiniGameBoard();
+    }
+
+    function resetMiniGame(note = "按“开始一局”，把卡片拖到它该去的地方。") {
+      window.clearInterval(miniGameState.timerId);
+      miniGameState.running = false;
+      miniGameState.score = 0;
+      miniGameState.time = 45;
+      miniGameState.combo = 0;
+      miniGameState.solved = 0;
+      miniGameState.selectedId = "";
+      miniGameState.cards = pickMiniGameCards();
+      renderMiniGameHud();
+      renderMiniGameBoard();
+      setMiniGameNote(note);
+    }
+
+    function startMiniGame() {
+      if (!gameStage) return;
+      resetMiniGame("调度局开门。拖、点都行，关键是别分错。");
+      miniGameState.running = true;
+      renderMiniGameBoard();
+      miniGameState.timerId = window.setInterval(tickMiniGame, 1000);
+    }
+
+    const breakoutWall = document.querySelector("#gameWall");
+    const breakoutBall = document.querySelector("#gameBall");
+    const breakoutPaddle = document.querySelector("#gamePaddle");
+    const breakoutBricks = [
+      { label: "摄影观察", type: "photo", image: "assets/photos/交大里的片段1.jpg", points: 18 },
+      { label: "夜的命名术", type: "photo", image: "assets/photos/夜的命名术1.jpg", points: 18 },
+      { label: "扫街片段", type: "photo", image: "assets/photos/那些年扫过的街.jpg", points: 18 },
+      { label: "电草青春", type: "photo", image: "assets/photos/电草见证过的青春1.jpg", points: 18 },
+      { label: "美食地图", color: "rgba(255,211,109,0.5)", points: 12 },
+      { label: "咖啡因", color: "rgba(217,95,53,0.32)", points: 12 },
+      { label: "音乐播放器", color: "rgba(111,167,200,0.36)", points: 14 },
+      { label: "夜曲", color: "rgba(111,167,200,0.42)", points: 14 },
+      { label: "Canvas DDL", color: "rgba(243,166,184,0.42)", points: 16 },
+      { label: "DeepSeek Agent", color: "rgba(146,230,181,0.38)", points: 16 },
+      { label: "个人标签", color: "rgba(255,255,255,0.5)", points: 10 },
+      { label: "生活数据", color: "rgba(146,230,181,0.34)", points: 10 }
+    ];
+    const breakoutState = {
+      running: false,
+      score: 0,
+      lives: 3,
+      bricksLeft: 0,
+      won: false,
+      paddleX: 0,
+      ballX: 0,
+      ballY: 0,
+      ballVX: 0,
+      ballVY: 0,
+      moveDir: 0,
+      frameId: 0,
+      lastFrame: 0,
+      width: 0,
+      height: 0,
+      paddleWidth: 96,
+      bricks: []
+    };
+
+    function renderMiniGameHud() {
+      if (!gameScore || !gameTime || !gameCombo) return;
+      gameScore.textContent = breakoutState.score;
+      gameTime.textContent = breakoutState.bricksLeft;
+      gameCombo.textContent = breakoutState.lives;
+    }
+
+    function setMiniGamePiecePositions() {
+      if (!gameStage || !breakoutPaddle || !breakoutBall) return;
+      const width = breakoutState.width || gameStage.clientWidth;
+      const paddleWidth = breakoutState.paddleWidth || Math.max(74, Math.min(112, width * 0.17));
+      breakoutState.paddleX = Math.max(paddleWidth / 2 + 8, Math.min(width - paddleWidth / 2 - 8, breakoutState.paddleX));
+      breakoutPaddle.style.width = `${paddleWidth}px`;
+      breakoutPaddle.style.transform = `translate3d(${breakoutState.paddleX}px, 0, 0) translateX(-50%)`;
+      breakoutBall.style.transform = `translate3d(${breakoutState.ballX}px, ${breakoutState.ballY}px, 0) translate(-50%, -50%)`;
+    }
+
+    function buildMiniGameBricks() {
+      if (!gameStage || !breakoutWall) return;
+      breakoutWall.innerHTML = "";
+      gameStage.querySelector(".game-easter")?.remove();
+      breakoutState.width = gameStage.clientWidth;
+      breakoutState.height = gameStage.clientHeight;
+      breakoutState.paddleWidth = Math.max(74, Math.min(112, breakoutState.width * 0.17));
+      const width = breakoutState.width;
+      const columns = width < 560 ? 3 : 4;
+      const gap = 8;
+      const brickWidth = (width - 56 - gap * (columns - 1)) / columns;
+      const brickHeight = width < 560 ? 46 : 54;
+      breakoutState.bricks = breakoutBricks.map((brick, index) => {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
+        const x = 28 + col * (brickWidth + gap);
+        const y = 42 + row * (brickHeight + gap);
+        const element = document.createElement("div");
+        element.className = `game-brick ${brick.type || ""}`;
+        element.textContent = brick.label;
+        element.style.left = `${x}px`;
+        element.style.top = `${y}px`;
+        element.style.width = `${brickWidth}px`;
+        element.style.height = `${brickHeight}px`;
+        if (brick.image) element.style.setProperty("--brick-image", `url("${brick.image}")`);
+        if (brick.color) element.style.setProperty("--brick-bg", brick.color);
+        breakoutWall.appendChild(element);
+        return { ...brick, x, y, width: brickWidth, height: brickHeight, element, alive: true };
+      });
+      breakoutState.bricksLeft = breakoutState.bricks.length;
+    }
+
+    function resetMiniGameBall() {
+      if (!gameStage) return;
+      const width = breakoutState.width || gameStage.clientWidth;
+      const height = breakoutState.height || gameStage.clientHeight;
+      breakoutState.paddleX = width / 2;
+      breakoutState.ballX = width / 2;
+      breakoutState.ballY = height - 58;
+      breakoutState.ballVX = (Math.random() > 0.5 ? 1 : -1) * 155;
+      breakoutState.ballVY = -230;
+      setMiniGamePiecePositions();
+    }
+
+    function endMiniGame(message) {
+      breakoutState.running = false;
+      window.cancelAnimationFrame(breakoutState.frameId);
+      setMiniGameNote(message);
+      renderMiniGameHud();
+    }
+
+    function launchMiniGameEasterEgg() {
+      if (!gameStage || breakoutState.won) return;
+      breakoutState.won = true;
+      makeConfetti();
+      const badge = document.createElement("div");
+      badge.className = "game-easter";
+      badge.innerHTML = `
+        <strong>隐藏成就：网页拆迁队</strong>
+        <span>你把现在的网页推倒重建，奖励一句新灵感：是不是可以添加个人的旅行地图呢？</span>
+      `;
+      gameStage.appendChild(badge);
+    }
+
+    function moveMiniGamePlayer(delta) {
+      if (!gameStage) return;
+      const width = breakoutState.width || gameStage.clientWidth;
+      const paddleWidth = breakoutState.paddleWidth || 96;
+      breakoutState.paddleX = Math.max(paddleWidth / 2 + 8, Math.min(width - paddleWidth / 2 - 8, breakoutState.paddleX + delta));
+      setMiniGamePiecePositions();
+    }
+
+    function hitMiniGameBrick(brick) {
+      brick.alive = false;
+      brick.element.classList.add("hit");
+      window.setTimeout(() => brick.element.remove(), 140);
+      breakoutState.score += brick.points || 10;
+      breakoutState.bricksLeft -= 1;
+      setMiniGameNote(`打碎了「${brick.label}」。`);
+      renderMiniGameHud();
+      if (breakoutState.bricksLeft <= 0) {
+        launchMiniGameEasterEgg();
+        endMiniGame(`通关！整页砖块清空，拿下 ${breakoutState.score} 分。`);
+      }
+    }
+
+    function updateMiniGame(frameTime) {
+      if (!breakoutState.running || !gameStage) return;
+      const delta = Math.min((frameTime - breakoutState.lastFrame) / 1000 || 0, 0.032);
+      breakoutState.lastFrame = frameTime;
+      const width = breakoutState.width || gameStage.clientWidth;
+      const height = breakoutState.height || gameStage.clientHeight;
+      const radius = 9;
+      const paddleWidth = breakoutState.paddleWidth || 96;
+      const paddleHeight = 14;
+      const paddleY = height - 18 - paddleHeight;
+
+      if (breakoutState.moveDir) moveMiniGamePlayer(breakoutState.moveDir * 360 * delta);
+      breakoutState.ballX += breakoutState.ballVX * delta;
+      breakoutState.ballY += breakoutState.ballVY * delta;
+
+      if (breakoutState.ballX <= radius || breakoutState.ballX >= width - radius) {
+        breakoutState.ballVX *= -1;
+        breakoutState.ballX = Math.max(radius, Math.min(width - radius, breakoutState.ballX));
+      }
+      if (breakoutState.ballY <= radius) {
+        breakoutState.ballVY = Math.abs(breakoutState.ballVY);
+        breakoutState.ballY = radius;
+      }
+
+      const overPaddleX = Math.abs(breakoutState.ballX - breakoutState.paddleX) <= paddleWidth / 2 + radius;
+      const overPaddleY = breakoutState.ballY + radius >= paddleY && breakoutState.ballY - radius <= paddleY + paddleHeight;
+      if (breakoutState.ballVY > 0 && overPaddleX && overPaddleY) {
+        const offset = (breakoutState.ballX - breakoutState.paddleX) / (paddleWidth / 2);
+        breakoutState.ballVX = offset * 260;
+        breakoutState.ballVY = -Math.min(360, Math.abs(breakoutState.ballVY) + 12);
+        breakoutState.ballY = paddleY - radius - 1;
+      }
+
+      for (const brick of breakoutState.bricks) {
+        if (!brick.alive) continue;
+        const hitX = breakoutState.ballX + radius > brick.x && breakoutState.ballX - radius < brick.x + brick.width;
+        const hitY = breakoutState.ballY + radius > brick.y && breakoutState.ballY - radius < brick.y + brick.height;
+        if (hitX && hitY) {
+          hitMiniGameBrick(brick);
+          const fromSide = breakoutState.ballX < brick.x + 5 || breakoutState.ballX > brick.x + brick.width - 5;
+          if (fromSide) breakoutState.ballVX *= -1;
+          else breakoutState.ballVY *= -1;
+          break;
+        }
+      }
+
+      if (!breakoutState.running) return;
+
+      if (breakoutState.ballY > height + 30) {
+        breakoutState.lives -= 1;
+        renderMiniGameHud();
+        if (breakoutState.lives <= 0) {
+          endMiniGame(`球掉完了，最终 ${breakoutState.score} 分。页面没有全碎，再来。`);
+          return;
+        }
+        resetMiniGameBall();
+        setMiniGameNote(`掉了一球，还剩 ${breakoutState.lives} 条命。`);
+      }
+
+      setMiniGamePiecePositions();
+      breakoutState.frameId = window.requestAnimationFrame(updateMiniGame);
+    }
+
+    function resetMiniGame(note = "按“开始一局”，用方向键、按钮或鼠标移动挡板。") {
+      window.cancelAnimationFrame(breakoutState.frameId);
+      breakoutState.running = false;
+      breakoutState.score = 0;
+      breakoutState.lives = 3;
+      breakoutState.won = false;
+      breakoutState.moveDir = 0;
+      buildMiniGameBricks();
+      resetMiniGameBall();
+      renderMiniGameHud();
+      setMiniGameNote(note);
+    }
+
+    function startMiniGame() {
+      if (!gameStage) return;
+      resetMiniGame("开打。把主页卡片全部敲碎。");
+      breakoutState.running = true;
+      breakoutState.lastFrame = performance.now();
+      breakoutState.frameId = window.requestAnimationFrame(updateMiniGame);
+    }
+
+    function setPaddleFromPointer(event) {
+      if (!gameStage) return;
+      const rect = gameStage.getBoundingClientRect();
+      breakoutState.paddleX = event.clientX - rect.left;
+      setMiniGamePiecePositions();
+    }
+
+    function pressMiniGameDirection(direction) {
+      breakoutState.moveDir = direction;
+      if (!breakoutState.running) moveMiniGamePlayer(direction * 24);
+    }
+
+    function releaseMiniGameDirection(direction) {
+      if (breakoutState.moveDir === direction) breakoutState.moveDir = 0;
+    }
+
+    gameStart?.addEventListener("click", startMiniGame);
+    gameReset?.addEventListener("click", () => resetMiniGame());
+    gameShuffle?.addEventListener("pointerdown", () => pressMiniGameDirection(-1));
+    gameHint?.addEventListener("pointerdown", () => pressMiniGameDirection(1));
+    gameShuffle?.addEventListener("pointerup", () => releaseMiniGameDirection(-1));
+    gameHint?.addEventListener("pointerup", () => releaseMiniGameDirection(1));
+    gameShuffle?.addEventListener("pointerleave", () => releaseMiniGameDirection(-1));
+    gameHint?.addEventListener("pointerleave", () => releaseMiniGameDirection(1));
+    gameStage?.addEventListener("pointermove", setPaddleFromPointer);
+    gameStage?.addEventListener("pointerdown", event => {
+      setPaddleFromPointer(event);
+      if (!breakoutState.running) startMiniGame();
+    });
+    window.addEventListener("resize", () => {
+      window.clearTimeout(window.breakoutResizeTimer);
+      window.breakoutResizeTimer = window.setTimeout(() => resetMiniGame("窗口变化了，砖块重新排版。"), 160);
+    });
+    resetMiniGame();
+
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape" && foodModal?.classList.contains("show")) {
+        closeFoodReviewModal();
+        return;
+      }
+      if (activePage === finishPageIndex) {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          event.preventDefault();
+          pressMiniGameDirection(event.key === "ArrowLeft" ? -1 : 1);
+          return;
+        }
+        if (event.key === " ") {
+          event.preventDefault();
+          if (!breakoutState.running) startMiniGame();
+          return;
+        }
+      }
+      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        goToPage(activePage + 1);
+      }
+      if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        goToPage(activePage - 1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        goToPage(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        goToPage(pages.length - 1);
+      }
+    });
+
+    window.addEventListener("keyup", event => {
+      if (event.key === "ArrowLeft") releaseMiniGameDirection(-1);
+      if (event.key === "ArrowRight") releaseMiniGameDirection(1);
+    });
+
+    function showToast(text) {
+      const toast = document.querySelector("#toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      window.clearTimeout(window.toastTimer);
+      window.toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2800);
+    }
+
+    document.querySelector("#avatarButton").addEventListener("click", () => {
+      const quote = profile.quotes[Math.floor(Math.random() * profile.quotes.length)];
+      showToast(quote);
+    });
+
+    document.querySelector("#hitokoto").addEventListener("click", () => {
+      const line = profile.hitokoto[Math.floor(Math.random() * profile.hitokoto.length)];
+      document.querySelector("#hitokoto").textContent = `“${line}”`;
+    });
+
+    document.querySelector("#themeButton").addEventListener("click", event => {
+      const isSunset = document.documentElement.dataset.theme === "sunset";
+      document.documentElement.dataset.theme = isSunset ? "" : "sunset";
+      event.currentTarget.textContent = isSunset ? "☾" : "☀";
+    });
+
+    const ideaPool = [
+      "把页面标题改成更像自己的表达。",
+      "把示例数据替换成真实记录。",
+      "给最重要的数据加一句解释。",
+      "检查手机宽度下按钮是否换行自然。",
+      "把报告里的踩坑过程写具体。",
+      "删掉不属于自己的空泛文案。",
+      "给摄影作品写一句拍摄动机。",
+      "把最近想吃的小店做成美食清单。",
+      "保留一个最有记忆点的交互。",
+      "让图表颜色和页面气质统一。"
+    ];
+
+    function makeConfetti() {
+      const colors = ["#7fc8ff", "#92e6b5", "#ff9fb7", "#ffd36d", "#ffffff"];
+      for (let i = 0; i < 34; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.setProperty("--drift", `${Math.random() * 180 - 90}px`);
+        piece.style.animationDelay = `${Math.random() * 160}ms`;
+        document.body.appendChild(piece);
+        window.setTimeout(() => piece.remove(), 1200);
+      }
+    }
+
+    const agentChat = document.querySelector("#agentChat");
+    const agentForm = document.querySelector("#agentForm");
+    const agentInput = document.querySelector("#agentInput");
+    const agentStatus = document.querySelector("#agentStatus");
+    const agentHistory = [];
+
+    function appendAgentMessage(role, text, extraClass = "") {
+      if (!agentChat) return null;
+      const message = document.createElement("div");
+      message.className = `agent-message ${role === "user" ? "user" : "bot"} ${extraClass}`.trim();
+      message.textContent = text;
+      agentChat.appendChild(message);
+      agentChat.scrollTop = agentChat.scrollHeight;
+      return message;
+    }
+
+    async function sendAgentMessage(text) {
+      const clean = text.trim();
+      if (!clean) return;
+
+      appendAgentMessage("user", clean);
+      agentHistory.push({ role: "user", content: clean });
+      if (agentInput) agentInput.value = "";
+      if (agentStatus) agentStatus.textContent = "思考中";
+      const loading = appendAgentMessage("assistant", "我正在组织语言...", "loading");
+
+      try {
+        const resp = await fetch("http://localhost:3000/api/agent/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: clean,
+            history: agentHistory.slice(-8)
+          }),
+          signal: AbortSignal.timeout(20000)
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) throw new Error(data.message || "Agent API 暂时不可用。");
+        const reply = data.reply || "我刚刚有点卡住了，可以换个问法再试一次。";
+        if (loading) {
+          loading.classList.remove("loading");
+          loading.textContent = reply;
+        }
+        agentHistory.push({ role: "assistant", content: reply });
+        if (agentStatus) agentStatus.textContent = data.model ? `API · ${data.model}` : "API 已连接";
+      } catch (err) {
+        const fallback = err.message || "本地后端未启动，或还没有配置 DeepSeek API Key。";
+        if (loading) {
+          loading.classList.remove("loading");
+          loading.textContent = fallback;
+        }
+        if (agentStatus) agentStatus.textContent = "未连接";
+      }
+    }
+
+    agentForm?.addEventListener("submit", event => {
+      event.preventDefault();
+      sendAgentMessage(agentInput?.value || "");
+    });
+
+    document.querySelectorAll("[data-agent-prompt]").forEach(button => {
+      button.addEventListener("click", () => sendAgentMessage(button.dataset.agentPrompt || ""));
+    });
+
+    renderTotals();
+    renderDashboard();
+    fetchCanvasSummary();
+    renderPhotoAndFood();
+    initMusicPlayer();
+    renderData();
+    updateClock();
+    goToPage(findPageIndexFromHash(), false);
+    window.setInterval(updateClock, 1000);
+
+    /* ===== 实时步数：从本地后端拉取手机上传数据 ===== */
+    const LIVE_STEPS_URL = "http://localhost:3000/api/steps";
+    let liveStepsActive = false;
+
+    async function fetchLiveSteps() {
+      const stepEl = document.querySelector("#stepTotal");
+      // 在当前步数元素旁添加或获取小圆点
+      let dot = document.querySelector("#stepLiveDot");
+      if (!dot) {
+        dot = document.createElement("span");
+        dot.id = "stepLiveDot";
+        dot.className = "live-dot offline";
+        dot.title = "正在连接手机步数...";
+        stepEl.appendChild(dot);
+      }
+
+      try {
+        const resp = await fetch(LIVE_STEPS_URL, { signal: AbortSignal.timeout(8000) });
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}));
+          if (body.error === "not_configured" || body.error === "not_authenticated") {
+            dot.className = "live-dot offline";
+            dot.title = body.message || "后端未授权";
+            liveStepsActive = false;
+          }
+          return;
+        }
+        const data = await resp.json();
+        if (data.steps != null) {
+          stepEl.childNodes[0].textContent = Number(data.steps).toLocaleString("zh-CN");
+          dot.className = "live-dot";
+          dot.title = `实时步数 · ${data.cached ? "缓存" : "刚刚刷新"} · ${new Date(data.timestamp).toLocaleTimeString("zh-CN")}`;
+          liveStepsActive = true;
+
+          // 同步更新 chart 数据中的当日步数
+          const todayIdx = profile.weekData.length - 1;
+          if (profile.weekData[todayIdx]) {
+            profile.weekData[todayIdx].steps = data.steps;
+            // 如果当前面板正在看步数，刷新图表
+            if (activeMetric === "steps") renderData();
+          }
+        }
+      } catch {
+        // 服务器未启动或网络不通，静默降级
+        dot.className = "live-dot offline";
+        dot.title = "后端未连接 · 点击查看状态";
+        liveStepsActive = false;
+      }
+    }
+
+    fetchLiveSteps();
+    window.setInterval(fetchLiveSteps, 60000); // 每 60 秒拉取一次
+    window.setInterval(fetchCanvasSummary, 180000); // 每 3 分钟刷新 Canvas
+
+    /* ===== 粒子背景 + 鼠标光晕 + 视差 ===== */
+    (function() {
+      const canvas = document.getElementById("bgCanvas");
+      const ctx = canvas.getContext("2d");
+      let W, H, mouseX = -500, mouseY = -500, targetMX = 0, targetMY = 0;
+      let particles = [];
+      const PARTICLE_COUNT = 110;
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener("resize", resize);
+
+      const isDark = () => document.documentElement.dataset.theme === "sunset";
+
+      function createParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.55,
+            vy: (Math.random() - 0.5) * 0.55,
+            r: Math.random() * 3 + 1.2,
+            alpha: Math.random() * 0.55 + 0.3
+          });
+        }
+      }
+      createParticles();
+      window.addEventListener("resize", createParticles);
+
+      document.addEventListener("mousemove", function(e) {
+        targetMX = e.clientX;
+        targetMY = e.clientY;
+      });
+
+      document.addEventListener("mouseleave", function() {
+        targetMX = -500;
+        targetMY = -500;
+      });
+
+      function animate() {
+        mouseX += (targetMX - mouseX) * 0.1;
+        mouseY += (targetMY - mouseY) * 0.1;
+
+        ctx.clearRect(0, 0, W, H);
+        const dark = isDark();
+        const lineColor = dark ? "220,200,170" : "130,95,60";
+        const dotColor = dark ? "224,154,110" : "193,120,78";
+        const mouseColor = dark ? "236,195,88" : "212,160,60";
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -20) p.x = W + 20;
+          if (p.x > W + 20) p.x = -20;
+          if (p.y < -20) p.y = H + 20;
+          if (p.y > H + 20) p.y = -20;
+
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 220 && targetMX > 0) {
+            const force = (220 - dist) / 220;
+            p.x += dx * force * 0.018;
+            p.y += dy * force * 0.018;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${dotColor},${p.alpha})`;
+          ctx.fill();
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const ldx = p.x - q.x;
+            const ldy = p.y - q.y;
+            const ldist = Math.sqrt(ldx * ldx + ldy * ldy);
+            if (ldist < 150) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(${lineColor},${0.1 * (1 - ldist / 150)})`;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+
+          if (dist < 140 && targetMX > 0) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.strokeStyle = `rgba(${mouseColor},${0.12 * (1 - dist / 140)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      /* 卡片视差 - 增强版 */
+      const glassCards = document.querySelectorAll(".glass");
+      document.addEventListener("mousemove", function(e) {
+        const cx = e.clientX, cy = e.clientY;
+        glassCards.forEach(function(card) {
+          const rect = card.getBoundingClientRect();
+          const midX = rect.left + rect.width / 2;
+          const midY = rect.top + rect.height / 2;
+          const dx = (cx - midX) / window.innerWidth;
+          const dy = (cy - midY) / window.innerHeight;
+          const dist = Math.sqrt((cx - midX) ** 2 + (cy - midY) ** 2);
+          const active = dist < 700;
+          card.style.setProperty("--px", (dx * 12).toFixed(2) + "px");
+          card.style.setProperty("--py", (dy * 10).toFixed(2) + "px");
+          card.style.setProperty("--px-h", active ? (dx * 6).toFixed(2) + "px" : "0px");
+          card.style.setProperty("--py-h", active ? (dy * 5).toFixed(2) + "px" : "0px");
+        });
+      });
+
+      /* 首屏文字渐入 */
+      setTimeout(function() {
+        document.querySelectorAll(".profile-panel h1, .type-line, .section-head h2, .section-head p").forEach(function(el, i) {
+          el.style.animationDelay = (i * 120) + "ms";
+          el.classList.add("text-reveal");
+        });
+      }, 100);
+    })();
+  </script>
+</body>
+</html>
