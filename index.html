@@ -4673,7 +4673,7 @@
   <div class="api-setup-modal" id="apiSetupModal" aria-hidden="true">
     <div class="api-setup-card" role="dialog" aria-modal="true" aria-label="本地 API 配置">
       <h3>本地 API 配置</h3>
-      <p>每次打开主页都会提醒填写 Canvas API 和 DeepSeek API。密钥只会发送到本机后端并写入 <code>server/.env</code>，不要提交到 GitHub。</p>
+      <p>本地打开主页时可以填写 Canvas API 和 DeepSeek API。密钥只会发送到本机后端并写入 <code>server/.env</code>，不要提交到 GitHub。</p>
       <form class="api-setup-form" id="apiSetupForm">
         <label>
           Canvas Token
@@ -4691,7 +4691,7 @@
           <button class="primary" type="submit">保存到本地后端</button>
           <button type="button" id="apiSetupLater">暂时跳过</button>
         </div>
-        <div class="api-setup-status" id="apiSetupStatus">如果只是看静态页面，可以暂时跳过；Canvas 和 Agent 会保持未连接。</div>
+        <div class="api-setup-status" id="apiSetupStatus">如果只是看静态页面，可以暂时跳过；公网 Agent 会走 Cloudflare Worker。</div>
       </form>
     </div>
   </div>
@@ -4948,7 +4948,11 @@
     let musicNoteTimer = 0;
     let activePage = 0;
     let isPaging = false;
-    const API_CONFIG_URL = "http://localhost:3000/api/config";
+    const LOCAL_API_BASE = "http://localhost:3000";
+    const PUBLIC_AGENT_API_URL = "https://homepage.2691075698.workers.dev/api/agent/chat";
+    const isLocalPage = location.protocol === "file:" || ["localhost", "127.0.0.1", ""].includes(location.hostname);
+    const API_CONFIG_URL = `${LOCAL_API_BASE}/api/config`;
+    const AGENT_API_URL = isLocalPage ? `${LOCAL_API_BASE}/api/agent/chat` : PUBLIC_AGENT_API_URL;
     const apiSetupModal = document.querySelector("#apiSetupModal");
     const apiSetupForm = document.querySelector("#apiSetupForm");
     const apiSetupLater = document.querySelector("#apiSetupLater");
@@ -5018,7 +5022,7 @@
         if (apiSetupStatus) apiSetupStatus.textContent = err.message || "保存失败，请确认本地后端已启动。";
       }
     });
-    loadApiSetupStatus();
+    if (isLocalPage) loadApiSetupStatus();
 
     function formatValue(value, metric) {
       if (metric === "steps") return `${Number(value).toLocaleString("zh-CN")} 步`;
@@ -6303,7 +6307,7 @@
       const loading = appendAgentMessage("assistant", "我正在组织语言...", "loading");
 
       try {
-        const resp = await fetch("http://localhost:3000/api/agent/chat", {
+        const resp = await fetch(AGENT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -6322,7 +6326,7 @@
         agentHistory.push({ role: "assistant", content: reply });
         if (agentStatus) agentStatus.textContent = data.model ? `API · ${data.model}` : "API 已连接";
       } catch (err) {
-        const fallback = err.message || "本地后端未启动，或还没有配置 DeepSeek API Key。";
+        const fallback = err.message || (isLocalPage ? "本地后端未启动，或还没有配置 DeepSeek API Key。" : "公网 Agent 暂时连接不上，可以稍后再试。");
         if (loading) {
           loading.classList.remove("loading");
           loading.textContent = fallback;
