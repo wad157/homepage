@@ -18,3 +18,4 @@ server/remind_state.json
 *.log
 .DS_Store
 Thumbs.db
+~$*.docx

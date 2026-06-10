@@ -3429,6 +3429,106 @@
       transform: translate(-50%, 0);
     }
 
+    .api-setup-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(35, 28, 22, 0.38);
+      backdrop-filter: blur(18px);
+    }
+
+    .api-setup-modal.show {
+      display: grid;
+    }
+
+    .api-setup-card {
+      width: min(560px, 100%);
+      border: 1px solid rgba(255,255,255,0.58);
+      border-radius: 18px;
+      padding: 22px;
+      background: rgba(250, 246, 236, 0.94);
+      color: #2b211b;
+      box-shadow: 0 30px 90px rgba(29, 20, 14, 0.28);
+      animation: foodModalIn 220ms ease both;
+    }
+
+    .api-setup-card h3 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    .api-setup-card p {
+      margin: 0;
+      color: rgba(43,33,27,0.72);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .api-setup-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .api-setup-form label {
+      display: grid;
+      gap: 6px;
+      color: rgba(43,33,27,0.76);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .api-setup-form input {
+      min-height: 42px;
+      border: 1px solid rgba(43,33,27,0.14);
+      border-radius: 12px;
+      padding: 0 12px;
+      background: rgba(255,255,255,0.72);
+      color: #2b211b;
+      font: inherit;
+      outline: none;
+    }
+
+    .api-setup-form input:focus {
+      border-color: rgba(47, 143, 127, 0.42);
+      box-shadow: 0 0 0 4px rgba(47, 143, 127, 0.1);
+    }
+
+    .api-setup-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .api-setup-actions button {
+      min-height: 40px;
+      border: 1px solid rgba(43,33,27,0.14);
+      border-radius: 999px;
+      padding: 0 16px;
+      background: rgba(255,255,255,0.64);
+      color: #2b211b;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .api-setup-actions button.primary {
+      background: #2f8f7f;
+      color: #fff;
+      border-color: rgba(47,143,127,0.42);
+    }
+
+    .api-setup-status {
+      min-height: 22px;
+      margin-top: 10px;
+      color: rgba(43,33,27,0.68);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     .confetti {
       position: fixed;
       top: -14px;
@@ -4186,7 +4286,7 @@
     </nav>
     <div class="top-actions">
       <button class="icon-btn" id="themeButton" type="button" aria-label="切换日夜主题">☾</button>
-      <a class="pill" href="README.txt">README</a>
+      <a class="pill" href="README.md">README</a>
     </div>
   </header>
 
@@ -4499,6 +4599,32 @@
     </div>
   </div>
 
+  <div class="api-setup-modal" id="apiSetupModal" aria-hidden="true">
+    <div class="api-setup-card" role="dialog" aria-modal="true" aria-label="本地 API 配置">
+      <h3>本地 API 配置</h3>
+      <p>每次打开主页都会提醒填写 Canvas API 和 DeepSeek API。密钥只会发送到本机后端并写入 <code>server/.env</code>，不要提交到 GitHub。</p>
+      <form class="api-setup-form" id="apiSetupForm">
+        <label>
+          Canvas Token
+          <input id="canvasTokenInput" name="canvasToken" type="password" autocomplete="off" required placeholder="粘贴 Canvas API Token">
+        </label>
+        <label>
+          DeepSeek API Key
+          <input id="deepseekKeyInput" name="deepseekApiKey" type="password" autocomplete="off" required placeholder="粘贴 DeepSeek API Key">
+        </label>
+        <label>
+          Canvas 地址
+          <input id="canvasBaseInput" name="canvasBaseUrl" type="url" value="https://oc.sjtu.edu.cn">
+        </label>
+        <div class="api-setup-actions">
+          <button class="primary" type="submit">保存到本地后端</button>
+          <button type="button" id="apiSetupLater">暂时跳过</button>
+        </div>
+        <div class="api-setup-status" id="apiSetupStatus">如果只是看静态页面，可以暂时跳过；Canvas 和 Agent 会保持未连接。</div>
+      </form>
+    </div>
+  </div>
+
   <div class="toast" id="toast">你好。</div>
 
   <script src="assets/data/food_reviews.js"></script>
@@ -4751,6 +4877,77 @@
     let musicNoteTimer = 0;
     let activePage = 0;
     let isPaging = false;
+    const API_CONFIG_URL = "http://localhost:3000/api/config";
+    const apiSetupModal = document.querySelector("#apiSetupModal");
+    const apiSetupForm = document.querySelector("#apiSetupForm");
+    const apiSetupLater = document.querySelector("#apiSetupLater");
+    const apiSetupStatus = document.querySelector("#apiSetupStatus");
+    const canvasTokenInput = document.querySelector("#canvasTokenInput");
+    const deepseekKeyInput = document.querySelector("#deepseekKeyInput");
+    const canvasBaseInput = document.querySelector("#canvasBaseInput");
+
+    function showApiSetupModal(message = "") {
+      if (!apiSetupModal) return;
+      apiSetupModal.classList.add("show");
+      apiSetupModal.setAttribute("aria-hidden", "false");
+      if (apiSetupStatus && message) apiSetupStatus.textContent = message;
+    }
+
+    function closeApiSetupModal() {
+      if (!apiSetupModal) return;
+      apiSetupModal.classList.remove("show");
+      apiSetupModal.setAttribute("aria-hidden", "true");
+    }
+
+    async function loadApiSetupStatus() {
+      showApiSetupModal("正在检查本地后端配置状态...");
+      try {
+        const resp = await fetch(`${API_CONFIG_URL}/status`, { signal: AbortSignal.timeout(3500) });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) throw new Error(data.message || "配置状态读取失败。");
+        if (canvasBaseInput && data.canvasBaseUrl) canvasBaseInput.value = data.canvasBaseUrl;
+        const canvasText = data.canvasConfigured ? "Canvas 已有配置" : "Canvas 未配置";
+        const deepseekText = data.deepseekConfigured ? "DeepSeek 已有配置" : "DeepSeek 未配置";
+        showApiSetupModal(`${canvasText}，${deepseekText}。如需刷新密钥，请重新填写并保存。`);
+      } catch {
+        showApiSetupModal("本地后端未启动。可双击 open-homepage.cmd，或进入 server 目录运行 npm start 后再保存。");
+      }
+    }
+
+    apiSetupLater?.addEventListener("click", closeApiSetupModal);
+
+    apiSetupForm?.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!canvasTokenInput || !deepseekKeyInput) return;
+      const payload = {
+        canvasToken: canvasTokenInput.value.trim(),
+        deepseekApiKey: deepseekKeyInput.value.trim(),
+        canvasBaseUrl: canvasBaseInput?.value.trim() || "https://oc.sjtu.edu.cn"
+      };
+      if (!payload.canvasToken || !payload.deepseekApiKey) {
+        if (apiSetupStatus) apiSetupStatus.textContent = "Canvas Token 和 DeepSeek API Key 都要填写。";
+        return;
+      }
+      if (apiSetupStatus) apiSetupStatus.textContent = "正在保存到 server/.env...";
+      try {
+        const resp = await fetch(API_CONFIG_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(8000)
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) throw new Error(data.message || "保存失败。");
+        canvasTokenInput.value = "";
+        deepseekKeyInput.value = "";
+        if (apiSetupStatus) apiSetupStatus.textContent = "保存成功。本地后端已更新配置，Canvas 和 Agent 可以继续使用。";
+        window.setTimeout(closeApiSetupModal, 900);
+        fetchCanvasSummary();
+      } catch (err) {
+        if (apiSetupStatus) apiSetupStatus.textContent = err.message || "保存失败，请确认本地后端已启动。";
+      }
+    });
+    loadApiSetupStatus();
 
     function formatValue(value, metric) {
       if (metric === "steps") return `${Number(value).toLocaleString("zh-CN")} 步`;

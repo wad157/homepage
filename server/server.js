@@ -12,7 +12,7 @@ function loadEnvFile(filePath) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) continue;
     const idx = trimmed.indexOf("=");
-    const key = trimmed.slice(0, idx).trim();
+    const key = trimmed.slice(0, idx).replace(/^\uFEFF/, "").trim();
     let value = trimmed.slice(idx + 1).trim();
     if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
@@ -47,6 +47,40 @@ const CONFIG = {
   deepseekReasoningEffort: process.env.DEEPSEEK_REASONING_EFFORT || "high",
   agentDataDir: path.join(__dirname, "agent_data"),
 };
+
+const ENV_FILE = path.join(__dirname, ".env");
+
+function isLocalRequest(req) {
+  const address = req.socket?.remoteAddress || "";
+  return address === "127.0.0.1" || address === "::1" || address === "::ffff:127.0.0.1";
+}
+
+function quoteEnvValue(value) {
+  return String(value || "").replace(/\r?\n/g, "").trim();
+}
+
+function writeEnvValues(updates) {
+  const existing = fs.existsSync(ENV_FILE)
+    ? fs.readFileSync(ENV_FILE, "utf8").replace(/^\uFEFF/, "").split(/\r?\n/)
+    : [];
+  const keys = new Set(Object.keys(updates));
+  const seen = new Set();
+  const lines = existing.map(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) return line;
+    const idx = trimmed.indexOf("=");
+    const key = trimmed.slice(0, idx).replace(/^\uFEFF/, "").trim();
+    if (!keys.has(key)) return line;
+    seen.add(key);
+    return `${key}=${quoteEnvValue(updates[key])}`;
+  });
+
+  for (const key of keys) {
+    if (!seen.has(key)) lines.push(`${key}=${quoteEnvValue(updates[key])}`);
+  }
+
+  fs.writeFileSync(ENV_FILE, lines.join("\n").replace(/\n{3,}/g, "\n\n") + "\n", "utf8");
+}
 
 // OAuth 鐩稿叧 URL
 const OAUTH_BASE = "oauth-login.cloud.huawei.com";
@@ -906,6 +940,82 @@ async function handleStatus(req, res) {
   }));
 }
 
+async function handleConfigStatus(req, res) {
+  if (req.method === "OPTIONS") {
+    sendJSON(res, 204, {});
+    return;
+  }
+  if (!isLocalRequest(req)) {
+    sendJSON(res, 403, { error: "local_only", message: "Config API only accepts localhost requests." });
+    return;
+  }
+  sendJSON(res, 200, {
+    canvasConfigured: Boolean(CONFIG.canvasToken),
+    deepseekConfigured: Boolean(CONFIG.deepseekApiKey),
+    canvasBaseUrl: CONFIG.canvasBaseUrl,
+    deepseekBaseUrl: CONFIG.deepseekBaseUrl,
+    deepseekModel: CONFIG.deepseekModel,
+  });
+}
+
+async function handleConfigUpdate(req, res, parsed) {
+  if (req.method === "OPTIONS") {
+    sendJSON(res, 204, {});
+    return;
+  }
+  if (!isLocalRequest(req)) {
+    sendJSON(res, 403, { error: "local_only", message: "Config API only accepts localhost requests." });
+    return;
+  }
+  if (req.method !== "POST") {
+    sendJSON(res, 405, { error: "method_not_allowed", message: "Use POST to update local config." });
+    return;
+  }
+
+  try {
+    const payload = await readPayload(req, parsed);
+    const canvasToken = String(payload.canvasToken || "").trim();
+    const deepseekApiKey = String(payload.deepseekApiKey || "").trim();
+    const canvasBaseUrl = String(payload.canvasBaseUrl || CONFIG.canvasBaseUrl || "https://oc.sjtu.edu.cn").trim();
+
+    if (!canvasToken || !deepseekApiKey) {
+      sendJSON(res, 400, {
+        error: "missing_keys",
+        message: "Canvas Token 和 DeepSeek API Key 都要填写。",
+      });
+      return;
+    }
+    if (!/^https?:\/\//i.test(canvasBaseUrl)) {
+      sendJSON(res, 400, {
+        error: "invalid_canvas_base_url",
+        message: "Canvas 地址需要以 http:// 或 https:// 开头。",
+      });
+      return;
+    }
+
+    writeEnvValues({
+      CANVAS_BASE_URL: canvasBaseUrl.replace(/\/+$/, ""),
+      CANVAS_TOKEN: canvasToken,
+      DEEPSEEK_API_KEY: deepseekApiKey,
+    });
+
+    CONFIG.canvasBaseUrl = canvasBaseUrl.replace(/\/+$/, "");
+    CONFIG.canvasToken = canvasToken;
+    CONFIG.deepseekApiKey = deepseekApiKey;
+    saveCanvasCache({});
+
+    sendJSON(res, 200, {
+      ok: true,
+      canvasConfigured: true,
+      deepseekConfigured: true,
+      canvasBaseUrl: CONFIG.canvasBaseUrl,
+      message: "Local API config saved.",
+    });
+  } catch (err) {
+    sendJSON(res, 400, { error: "bad_request", message: err.message });
+  }
+}
+
 function servePage(res, html) {
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
   res.end(html);
@@ -1056,6 +1166,18 @@ const server = http.createServer(async (req, res) => {
   // GET /api/status
   if (pathname === "/api/status") {
     await handleStatus(req, res);
+    return;
+  }
+
+  // GET /api/config/status
+  if (pathname === "/api/config/status") {
+    await handleConfigStatus(req, res);
+    return;
+  }
+
+  // POST /api/config
+  if (pathname === "/api/config") {
+    await handleConfigUpdate(req, res, parsed);
     return;
   }
 
