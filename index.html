@@ -3389,6 +3389,46 @@
       line-height: 1.7;
     }
 
+    .comment-card {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: clamp(14px, 2vw, 20px);
+      background: rgba(255,255,255,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.34);
+    }
+
+    .comment-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .comment-head h3 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 34px);
+      line-height: 1.05;
+    }
+
+    .comment-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      max-width: 420px;
+    }
+
+    .comment-frame {
+      min-height: 170px;
+      border: 1px solid rgba(255,255,255,0.38);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255,255,255,0.5);
+      overflow: hidden;
+    }
+
     .idea-box {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4578,6 +4618,24 @@
               <button type="button" id="gameLeft">← 左移</button>
               <button type="button" id="gameRight">右移 →</button>
             </div>
+          </div>
+        </div>
+        <div class="comment-card">
+          <div class="comment-head">
+            <div>
+              <h3>留言板</h3>
+              <p>欢迎留下吐槽、建议或通关分数。评论会保存到 GitHub Issues，所有访问者都能看到。</p>
+            </div>
+          </div>
+          <div class="comment-frame">
+            <script src="https://utteranc.es/client.js"
+              repo="wad157/homepage"
+              issue-term="pathname"
+              label="homepage-comment"
+              theme="github-light"
+              crossorigin="anonymous"
+              async>
+            </script>
           </div>
         </div>
       </div>
